@@ -1,0 +1,315 @@
+{
+  "study_version": "preview-v1",
+  "stimulus_manifest_version": "PLACEHOLDER",
+  "assignment_version": "rotation-5q-v1",
+  "ready_for_participants": false,
+  "layout_conditions": {
+    "L1": {
+      "researcher_algorithm_name": "PLACEHOLDER: 正式な描画アルゴリズム名"
+    },
+    "L2": {
+      "researcher_algorithm_name": "PLACEHOLDER: 正式な描画アルゴリズム名"
+    },
+    "L3": {
+      "researcher_algorithm_name": "PLACEHOLDER: 正式な描画アルゴリズム名"
+    }
+  },
+  "groups": {
+    "A": {
+      "display_name": "Group A",
+      "trials": [
+        {
+          "question_id": "Q1",
+          "layout_condition_id": "L1"
+        },
+        {
+          "question_id": "Q2",
+          "layout_condition_id": "L2"
+        },
+        {
+          "question_id": "Q3",
+          "layout_condition_id": "L3"
+        },
+        {
+          "question_id": "Q4",
+          "layout_condition_id": "L1"
+        },
+        {
+          "question_id": "Q5",
+          "layout_condition_id": "L2"
+        }
+      ]
+    },
+    "B": {
+      "display_name": "Group B",
+      "trials": [
+        {
+          "question_id": "Q1",
+          "layout_condition_id": "L2"
+        },
+        {
+          "question_id": "Q2",
+          "layout_condition_id": "L3"
+        },
+        {
+          "question_id": "Q3",
+          "layout_condition_id": "L1"
+        },
+        {
+          "question_id": "Q4",
+          "layout_condition_id": "L2"
+        },
+        {
+          "question_id": "Q5",
+          "layout_condition_id": "L3"
+        }
+      ]
+    },
+    "C": {
+      "display_name": "Group C",
+      "trials": [
+        {
+          "question_id": "Q1",
+          "layout_condition_id": "L3"
+        },
+        {
+          "question_id": "Q2",
+          "layout_condition_id": "L1"
+        },
+        {
+          "question_id": "Q3",
+          "layout_condition_id": "L2"
+        },
+        {
+          "question_id": "Q4",
+          "layout_condition_id": "L3"
+        },
+        {
+          "question_id": "Q5",
+          "layout_condition_id": "L1"
+        }
+      ]
+    }
+  },
+  "practice": {
+    "question_id": "P0",
+    "prompt": "PLACEHOLDER: 練習設問",
+    "definition": "つながる：異なるグループの所属ノード間に線が1本以上あること。",
+    "option_ids": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "stimulus_id": "P0-practice",
+    "image_path": "assets/P0-practice.png",
+    "sha256": null,
+    "feedback": "PLACEHOLDER: 練習の正解と解説（練習のみ公開可）"
+  },
+  "questions": {
+    "Q1": {
+      "prompt": "PLACEHOLDER: 正式な設問へ差し替える",
+      "definition": "つながる：異なるグループの所属ノード間に線が1本以上あること。",
+      "option_ids": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "dataset_id": null,
+      "event_id": null,
+      "source_timestamp": null,
+      "target_timestamp": null,
+      "variants": {
+        "L1": {
+          "stimulus_id": "Q1-L1",
+          "image_path": "assets/Q1-L1.png",
+          "sha256": null
+        },
+        "L2": {
+          "stimulus_id": "Q1-L2",
+          "image_path": "assets/Q1-L2.png",
+          "sha256": null
+        },
+        "L3": {
+          "stimulus_id": "Q1-L3",
+          "image_path": "assets/Q1-L3.png",
+          "sha256": null
+        }
+      }
+    },
+    "Q2": {
+      "prompt": "PLACEHOLDER: 正式な設問へ差し替える",
+      "definition": "つながる：異なるグループの所属ノード間に線が1本以上あること。",
+      "option_ids": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "dataset_id": null,
+      "event_id": null,
+      "source_timestamp": null,
+      "target_timestamp": null,
+      "variants": {
+        "L1": {
+          "stimulus_id": "Q2-L1",
+          "image_path": "assets/Q2-L1.png",
+          "sha256": null
+        },
+        "L2": {
+          "stimulus_id": "Q2-L2",
+          "image_path": "assets/Q2-L2.png",
+          "sha256": null
+        },
+        "L3": {
+          "stimulus_id": "Q2-L3",
+          "image_path": "assets/Q2-L3.png",
+          "sha256": null
+        }
+      }
+    },
+    "Q3": {
+      "prompt": "PLACEHOLDER: 正式な設問へ差し替える",
+      "definition": "つながる：異なるグループの所属ノード間に線が1本以上あること。",
+      "option_ids": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "dataset_id": null,
+      "event_id": null,
+      "source_timestamp": null,
+      "target_timestamp": null,
+      "variants": {
+        "L1": {
+          "stimulus_id": "Q3-L1",
+          "image_path": "assets/Q3-L1.png",
+          "sha256": null
+        },
+        "L2": {
+          "stimulus_id": "Q3-L2",
+          "image_path": "assets/Q3-L2.png",
+          "sha256": null
+        },
+        "L3": {
+          "stimulus_id": "Q3-L3",
+          "image_path": "assets/Q3-L3.png",
+          "sha256": null
+        }
+      }
+    },
+    "Q4": {
+      "prompt": "PLACEHOLDER: 正式な設問へ差し替える",
+      "definition": "つながる：異なるグループの所属ノード間に線が1本以上あること。",
+      "option_ids": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "dataset_id": null,
+      "event_id": null,
+      "source_timestamp": null,
+      "target_timestamp": null,
+      "variants": {
+        "L1": {
+          "stimulus_id": "Q4-L1",
+          "image_path": "assets/Q4-L1.png",
+          "sha256": null
+        },
+        "L2": {
+          "stimulus_id": "Q4-L2",
+          "image_path": "assets/Q4-L2.png",
+          "sha256": null
+        },
+        "L3": {
+          "stimulus_id": "Q4-L3",
+          "image_path": "assets/Q4-L3.png",
+          "sha256": null
+        }
+      }
+    },
+    "Q5": {
+      "prompt": "PLACEHOLDER: 正式な設問へ差し替える",
+      "definition": "つながる：異なるグループの所属ノード間に線が1本以上あること。",
+      "option_ids": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "dataset_id": null,
+      "event_id": null,
+      "source_timestamp": null,
+      "target_timestamp": null,
+      "variants": {
+        "L1": {
+          "stimulus_id": "Q5-L1",
+          "image_path": "assets/Q5-L1.png",
+          "sha256": null
+        },
+        "L2": {
+          "stimulus_id": "Q5-L2",
+          "image_path": "assets/Q5-L2.png",
+          "sha256": null
+        },
+        "L3": {
+          "stimulus_id": "Q5-L3",
+          "image_path": "assets/Q5-L3.png",
+          "sha256": null
+        }
+      }
+    }
+  },
+  "confidence": {
+    "prompt": "今の回答に、どのくらい自信がありますか？",
+    "options": [
+      {
+        "value": 1,
+        "label": "まったく自信がない"
+      },
+      {
+        "value": 2,
+        "label": "あまり自信がない"
+      },
+      {
+        "value": 3,
+        "label": "どちらともいえない"
+      },
+      {
+        "value": 4,
+        "label": "やや自信がある"
+      },
+      {
+        "value": 5,
+        "label": "とても自信がある"
+      }
+    ],
+    "default": null
+  },
+  "display": {
+    "minimum_viewport_width": null,
+    "minimum_viewport_height": null,
+    "note": "正式画像と実施端末で確認して設定する。previewでは未設定を許す。画像の縦横比を保持し、3条件で表示規則を共通にする。"
+  },
+  "timing": {
+    "unit": "milliseconds",
+    "clock": "client_monotonic",
+    "start": "stimulus_and_answer_UI_first_visible_frame",
+    "end": "accepted_answer_confirm_action",
+    "include_confidence": false,
+    "include_breaks": false,
+    "time_limit_ms": null,
+    "hidden_tab_policy": "continue_and_flag"
+  },
+  "submission": {
+    "mode": "end_of_session_batch",
+    "include_practice": true,
+    "expected_main_trial_count": 5,
+    "expected_practice_trial_count": 1,
+    "idempotency_key": "submission_id",
+    "credentials_location": "server_environment_only"
+  }
+}

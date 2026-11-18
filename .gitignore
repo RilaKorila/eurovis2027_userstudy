@@ -1,0 +1,8 @@
+user-study-webapp-requirements/*
+
+.DS_Store
+__pycache__/
+.venv/
+.streamlit/secrets.toml
+study-private/
+.study-data/

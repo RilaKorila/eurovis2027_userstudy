@@ -1,0 +1,376 @@
+const versions = ["study_version", "stimulus_manifest_version", "assignment_version"];
+const trialFields = ["trial_index", "question_id", "layout_condition_id", "stimulus_id", "stimulus_sha256"];
+const utc = () => new Date().toISOString();
+const pick = (source, keys) => Object.fromEntries(keys.map(key => [key, source[key]]));
+const viewport = () => ({
+  viewport_width: window.innerWidth,
+  viewport_height: window.innerHeight,
+  device_pixel_ratio: window.devicePixelRatio,
+});
+const storageKey = study => "graph-view-study:" + JSON.stringify(versions.map(key => study[key]));
+
+function el(tag, content, className) {
+  const node = document.createElement(tag);
+  if (content !== undefined) node.textContent = content;
+  if (className) node.className = className;
+  return node;
+}
+
+function button(label, action, disabled = false) {
+  const node = el("button", label, "action");
+  node.type = "button";
+  node.disabled = disabled;
+  node.addEventListener("click", action);
+  return node;
+}
+
+function choices(name, legend, items, onChoice) {
+  const group = el("fieldset");
+  group.append(el("legend", legend));
+  const row = el("div", undefined, "choices");
+  for (const [value, text] of items) {
+    const label = el("label");
+    const input = el("input");
+    Object.assign(input, {type: "radio", name, value});
+    input.addEventListener("change", () => onChoice(value));
+    label.append(input, el("span", text));
+    row.append(label);
+  }
+  group.append(row);
+  return group;
+}
+
+function start(root, study, emit) {
+  const key = storageKey(study);
+  let state;
+  let requestId;
+  let latestRequestId;
+  let timeout;
+  let timedStart;
+  let disposed = false;
+  let renderId = 0;
+  let frame;
+  let failed = false;
+  let storageError = false;
+
+  function save() {
+    if (storageError) return false;
+    try {
+      sessionStorage.setItem(key, JSON.stringify(state));
+      return true;
+    } catch {
+      storageError = true;
+      stopTiming();
+      root.replaceChildren(el("p", "回答を保持できません。研究担当者へご連絡ください。", "error"));
+      return false;
+    }
+  }
+
+  function stopTiming() {
+    timedStart = undefined;
+    if (frame !== undefined) cancelAnimationFrame(frame);
+    document.removeEventListener("visibilitychange", visibility);
+    window.removeEventListener("blur", blur);
+  }
+
+  try {
+    state = JSON.parse(sessionStorage.getItem(key) || "null");
+    if (!state) {
+      state = {screen: "group", index: 0, trials: [], aborted_attempts: [],
+               participant_id: crypto.randomUUID(), session_id: crypto.randomUUID(),
+               submission_id: crypto.randomUUID(), started_at_utc: utc(),
+               environment: {user_agent: navigator.userAgent, ...viewport()}};
+    }
+    if (state.screen === "question") {
+      if (state.active) {
+        state.aborted_attempts.push({...state.active, status: "aborted_reload", aborted_at_utc: utc()});
+      }
+      delete state.active;
+      state.screen = "confirm";
+    }
+    if (state.screen === "submit" && state.payload) failed = true;
+  } catch {
+    root.replaceChildren(el("p", "実験を開始できません。ブラウザの設定をご確認ください。", "error"));
+    return {update() {}, dispose() {}};
+  }
+
+  function go(screen) {
+    state.screen = screen;
+    if (save()) render();
+  }
+
+  function log(kind) {
+    if (timedStart === undefined || state.screen !== "question" || !state.active) return;
+    state.active.attention_events.push({kind, at_utc: utc(), elapsed_ms: performance.now() - timedStart});
+    save();
+  }
+
+  function visibility() {
+    if (document.hidden) log("hidden");
+  }
+
+  function blur() {
+    log("blur");
+  }
+
+  function trialTitle() {
+    return state.index === 0 ? "練習問題" : `本番 第${state.index}問／5`;
+  }
+
+  function currentTrial() {
+    return state.assignment[state.index];
+  }
+
+  function fitsViewport() {
+    return innerWidth >= study.minimum_viewport[0] && innerHeight >= study.minimum_viewport[1];
+  }
+
+  function confirm(panel, generation) {
+    panel.append(el("p", "準備ができたら開始してください。"));
+    const status = el("p", "", "muted");
+    status.setAttribute("role", "status");
+    let loaded = false;
+    let error = false;
+    let image;
+    const begin = button("問題を開始する", () => {
+      if (!loaded || !fitsViewport() || state.screen !== "confirm") return;
+      state.screen = "question";
+      state.group_locked = true;
+      if (save()) showQuestion(image);
+    }, true);
+    const retry = button("画像の読み込みを再試行", load);
+    panel.append(status, begin, retry);
+
+    function statusUpdate() {
+      if (disposed || renderId !== generation || storageError) return;
+      begin.disabled = !loaded || !fitsViewport();
+      retry.hidden = !error;
+      if (error) status.textContent = "画像を読み込めませんでした。";
+      else if (!fitsViewport()) {
+        status.textContent = `表示領域を ${study.minimum_viewport.join(" × ")} ピクセル以上にしてください。`;
+      } else status.textContent = loaded ? "" : "画像を読み込んでいます…";
+    }
+
+    async function load() {
+      loaded = error = false;
+      statusUpdate();
+      image = new Image();
+      image.alt = "前後2時刻のグラフ";
+      image.src = currentTrial().image_url;
+      try {
+        await image.decode();
+        loaded = true;
+      } catch {
+        error = true;
+      }
+      statusUpdate();
+    }
+
+    window.addEventListener("resize", statusUpdate);
+    removeResize = () => window.removeEventListener("resize", statusUpdate);
+    load();
+  }
+
+  function showQuestion(image) {
+    const trial = currentTrial();
+    const panel = layout(trialTitle(), false);
+    panel.style.visibility = "hidden";
+    panel.append(el("p", trial.prompt, "prompt"), el("p", trial.definition, "muted"), image);
+    let answer;
+    const next = button("回答を確定して次へ", () => {
+      if (!answer || timedStart === undefined || state.screen !== "question" || next.disabled) return;
+      const end = performance.now();
+      next.disabled = true;
+      state.trials.push({...state.active, selected_option_id: answer, response_time_ms: end - timedStart,
+                         answer_confirmed_at_utc: utc()});
+      delete state.active;
+      stopTiming();
+      go("confidence");
+    }, true);
+    panel.append(choices("answer", "回答", trial.option_ids.map(option => [
+      option, trial.option_labels[option] ? `${option}　${trial.option_labels[option]}` : option,
+    ]), value => {
+      answer = value;
+      next.disabled = timedStart === undefined;
+    }), next);
+
+    function reveal() {
+      if (disposed || state.screen !== "question" || storageError) return;
+      if (document.hidden) {
+        frame = requestAnimationFrame(reveal);
+        return;
+      }
+      if (!fitsViewport()) {
+        go("confirm");
+        return;
+      }
+      const size = image.getBoundingClientRect();
+      const attempts = state.aborted_attempts.filter(record => record.trial_index === state.index).length;
+      state.active = {...pick(trial, trialFields), image_shown_at_utc: utc(),
+        attempt_index: attempts + 1, attention_events: [],
+        image_natural_width: image.naturalWidth, image_natural_height: image.naturalHeight,
+        image_rendered_width: size.width, image_rendered_height: size.height, ...viewport()};
+      if (!save()) return;
+      document.addEventListener("visibilitychange", visibility);
+      window.addEventListener("blur", blur);
+      timedStart = performance.now();
+      panel.style.visibility = "visible";
+      panel.querySelector("h1").focus({preventScroll: true});
+    }
+    frame = requestAnimationFrame(reveal);
+  }
+
+  function send() {
+    if (requestId) return;
+    if (!state.payload) {
+      state.payload = {...pick(study, versions),
+        ...pick(state, ["session_id", "participant_id", "submission_id", "group_id", "started_at_utc",
+                        "environment", "trials", "aborted_attempts"]), submitted_at_utc: utc()};
+    }
+    if (!save()) return;
+    requestId = crypto.randomUUID();
+    const submitted = latestRequestId = requestId;
+    render();
+    timeout = window.setTimeout(() => {
+      if (requestId === submitted) fail();
+    }, 25_000);
+    try {
+      emit("submit", {request_id: submitted, payload: state.payload});
+    } catch {
+      fail();
+    }
+  }
+
+  function fail() {
+    clearTimeout(timeout);
+    requestId = undefined;
+    failed = true;
+    render();
+  }
+
+  function update(nextEmit, receipt) {
+    emit = nextEmit;
+    if (!receipt || latestRequestId !== receipt.request_id || state.screen !== "submit") return;
+    latestRequestId = undefined;
+    if (!receipt.ok) {
+      fail();
+      return;
+    }
+    clearTimeout(timeout);
+    requestId = undefined;
+    // Retain only a local completion marker after the server has acknowledged the save.
+    state = {screen: "done", submission_id: state.submission_id};
+    if (save()) render();
+  }
+
+  let removeResize = () => {};
+  function layout(title, focusHeading = true) {
+    removeResize();
+    removeResize = () => {};
+    ++renderId;
+    const header = el("header", "グラフの比較実験");
+    if (study.preview) header.append(el("span", "開発プレビュー", "preview"));
+    const h = el("h1", title);
+    h.tabIndex = -1;
+    const panel = el("section", undefined, "panel");
+    panel.append(h);
+    root.replaceChildren(header, panel);
+    if (focusHeading) h.focus({preventScroll: true});
+    return panel;
+  }
+
+  function render() {
+    switch (state.screen) {
+      case "group": {
+        const panel = layout("参加グループ");
+        panel.append(el("p", "事前に指定されたグループを選んでください。"));
+        let selected;
+        const next = button("説明へ", () => {
+          state.group_id = selected;
+          state.assignment = study.groups[selected];
+          go("instructions");
+        }, true);
+        panel.append(choices("group", "グループ", ["A", "B", "C"].map(id => [id, "Group " + id]),
+                              value => { selected = value; next.disabled = false; }), next);
+        break;
+      }
+      case "instructions": {
+        const panel = layout("実験の説明");
+        const instructions = el("ol");
+        for (const line of study.introduction) instructions.append(el("li", line));
+        panel.append(instructions, el("p", currentTrial().definition, "muted"),
+          button("練習へ", () => go("confirm")), button("グループを変更", () => go("group")));
+        break;
+      }
+      case "confirm": {
+        const panel = layout(trialTitle());
+        confirm(panel, renderId);
+        if (state.index === 0 && !state.group_locked) {
+          panel.append(button("グループを変更", () => go("group")));
+        }
+        break;
+      }
+      case "confidence": {
+        const panel = layout(trialTitle());
+        let rating;
+        const next = button("次へ", () => {
+          state.trials.at(-1).confidence = rating;
+          go(state.index === 0 ? "feedback" : "break");
+        }, true);
+        panel.append(choices("confidence", study.confidence.prompt,
+          study.confidence.options.map(({value, label}) => [value, label]), value => {
+            rating = value;
+            next.disabled = false;
+          }), next);
+        break;
+      }
+      case "feedback": {
+        const panel = layout("練習の解説");
+        panel.append(el("p", `正解は ${study.practice_feedback.answer} です。`, "prompt"),
+          el("p", study.practice_feedback.explanation),
+          button("本番へ", () => { state.index = 1; go("confirm"); }));
+        break;
+      }
+      case "break": {
+        const panel = layout("休憩");
+        panel.append(el("p", `第${state.index}問が終了しました。必要に応じて休憩してください。`));
+        panel.append(state.index === 5 ? button("送信確認へ", () => go("submit")) :
+          button("次の問題へ", () => { state.index += 1; go("confirm"); }));
+        break;
+      }
+      case "submit": {
+        const panel = layout("送信確認");
+        panel.append(el("p", "本番5問の回答と自信度が揃いました。送信して終了してください。"),
+          el("p", `Group ${state.group_id} ／ 練習1問・本番5問`));
+        const status = el("p", requestId ? "保存完了を待っています…" : failed ?
+          "保存の完了を確認できませんでした。回答は保持されています。再送信してください。" : "",
+        failed && !requestId ? "error" : "muted");
+        status.setAttribute("role", "status");
+        panel.append(status, button(requestId ? "送信中…" : failed ? "再送信" : "回答をまとめて送信",
+          send, Boolean(requestId)));
+        break;
+      }
+      case "done":
+        layout("送信完了").append(el("p", "送信が完了しました。ご協力ありがとうございました。"));
+        break;
+    }
+  }
+
+  if (save()) render();
+  return {update, dispose() {
+    disposed = true;
+    clearTimeout(timeout);
+    stopTiming();
+    removeResize();
+  }};
+}
+
+export default function ({parentElement, data, setTriggerValue}) {
+  const root = parentElement.querySelector("#study-root");
+  if (!root.study) root.study = start(root, data.study, setTriggerValue);
+  root.study.update(setTriggerValue, data.receipt);
+  return () => {
+    root.study?.dispose();
+    delete root.study;
+  };
+}
