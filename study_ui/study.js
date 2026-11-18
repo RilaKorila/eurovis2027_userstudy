@@ -46,6 +46,7 @@ function start(root, study, emit) {
   let requestId;
   let latestRequestId;
   let timeout;
+  let completionTimeout;
   let timedStart;
   let disposed = false;
   let renderId = 0;
@@ -88,7 +89,13 @@ function start(root, study, emit) {
       delete state.active;
       state.screen = "confirm";
     }
+    // Resume sessions saved on the old rest screen after their confidence was recorded.
+    if (state.screen === "break") state.screen = afterMainTrial();
     if (state.screen === "submit" && state.payload) failed = true;
+    if (!state.user_id && !["group", "done", "user_id"].includes(state.screen)) {
+      state.resume_screen = state.screen;
+      state.screen = "user_id";
+    }
   } catch {
     root.replaceChildren(el("p", "実験を開始できません。ブラウザの設定をご確認ください。", "error"));
     return {update() {}, dispose() {}};
@@ -97,6 +104,12 @@ function start(root, study, emit) {
   function go(screen) {
     state.screen = screen;
     if (save()) render();
+  }
+
+  function afterMainTrial() {
+    if (state.index === state.assignment.length - 1) return "submit";
+    state.index += 1;
+    return "confirm";
   }
 
   function log(kind) {
@@ -114,7 +127,7 @@ function start(root, study, emit) {
   }
 
   function trialTitle() {
-    return state.index === 0 ? "練習問題" : `本番 第${state.index}問／5`;
+    return state.index === 0 ? "練習問題" : `本番 第${state.index}問 / 全${state.assignment.length - 1}問`;
   }
 
   function currentTrial() {
@@ -222,9 +235,10 @@ function start(root, study, emit) {
 
   function send() {
     if (requestId) return;
+    if (state.payload && !state.payload.user_id) state.payload.user_id = state.user_id;
     if (!state.payload) {
       state.payload = {...pick(study, versions),
-        ...pick(state, ["session_id", "participant_id", "submission_id", "group_id", "started_at_utc",
+        ...pick(state, ["session_id", "participant_id", "submission_id", "user_id", "group_id", "started_at_utc",
                         "environment", "trials", "aborted_attempts"]), submitted_at_utc: utc()};
     }
     if (!save()) return;
@@ -235,7 +249,8 @@ function start(root, study, emit) {
       if (requestId === submitted) fail();
     }, 25_000);
     try {
-      emit("submit", {request_id: submitted, payload: state.payload});
+      emit("submit", {request_id: submitted, payload: state.payload,
+        reduce_motion: matchMedia("(prefers-reduced-motion: reduce)").matches});
     } catch {
       fail();
     }
@@ -260,7 +275,13 @@ function start(root, study, emit) {
     requestId = undefined;
     // Retain only a local completion marker after the server has acknowledged the save.
     state = {screen: "done", submission_id: state.submission_id};
-    if (save()) render();
+    if (!save()) return;
+    const panel = layout("回答を保存しました");
+    panel.classList.add("completion-splash");
+    const mark = el("span", "✓", "completion-mark");
+    mark.setAttribute("aria-hidden", "true");
+    panel.prepend(mark);
+    completionTimeout = window.setTimeout(render, 1500);
   }
 
   let removeResize = () => {};
@@ -281,17 +302,38 @@ function start(root, study, emit) {
 
   function render() {
     switch (state.screen) {
-      case "group": {
-        const panel = layout("参加グループ");
-        panel.append(el("p", "事前に指定されたグループを選んでください。"));
+      case "group":
+      case "user_id": {
+        const returning = state.screen === "user_id";
+        const panel = layout(returning ? "学籍番号の入力" : "参加グループ");
+        panel.append(el("p", returning ? "学籍番号を入力してください。" : "学籍番号を入力し、事前に指定されたグループを選んでください。"));
+        const label = el("label", undefined, "student-id-label");
+        const input = el("input");
+        Object.assign(input, {type: "text", id: "student-id", maxLength: 128, value: state.user_id || "", autocomplete: "off"});
+        label.htmlFor = input.id;
+        label.append(el("span", "学籍番号"), input);
         let selected;
-        const next = button("説明へ", () => {
-          state.group_id = selected;
-          state.assignment = study.groups[selected];
-          go("instructions");
+        const next = button(returning ? "続ける" : "説明へ", () => {
+          state.user_id = input.value.trim();
+          if (returning) {
+            const resume = state.resume_screen;
+            delete state.resume_screen;
+            go(resume);
+          } else {
+            state.group_id = selected;
+            state.assignment = study.groups[selected];
+            go("instructions");
+          }
         }, true);
-        panel.append(choices("group", "グループ", ["A", "B", "C"].map(id => [id, "Group " + id]),
-                              value => { selected = value; next.disabled = false; }), next);
+        const refresh = () => { next.disabled = !input.value.trim() || (!returning && !selected); };
+        input.addEventListener("input", refresh);
+        panel.append(label);
+        if (!returning) {
+          panel.append(choices("group", "グループ", ["A", "B", "C"].map(id => [id, "Group " + id]),
+                               value => { selected = value; refresh(); }));
+        }
+        panel.append(next);
+        refresh();
         break;
       }
       case "instructions": {
@@ -315,7 +357,7 @@ function start(root, study, emit) {
         let rating;
         const next = button("次へ", () => {
           state.trials.at(-1).confidence = rating;
-          go(state.index === 0 ? "feedback" : "break");
+          go(state.index === 0 ? "feedback" : afterMainTrial());
         }, true);
         panel.append(choices("confidence", study.confidence.prompt,
           [...study.confidence.options].reverse().map(({value, label}) => [value, label]), value => {
@@ -329,13 +371,6 @@ function start(root, study, emit) {
         panel.append(el("p", `正解は ${study.practice_feedback.answer} です。`, "prompt"),
           el("p", study.practice_feedback.explanation),
           button("本番へ", () => { state.index = 1; go("confirm"); }));
-        break;
-      }
-      case "break": {
-        const panel = layout("休憩");
-        panel.append(el("p", `第${state.index}問が終了しました。必要に応じて休憩してください。`));
-        panel.append(state.index === 5 ? button("送信確認へ", () => go("submit")) :
-          button("次の問題へ", () => { state.index += 1; go("confirm"); }));
         break;
       }
       case "submit": {
@@ -360,6 +395,7 @@ function start(root, study, emit) {
   return {update, dispose() {
     disposed = true;
     clearTimeout(timeout);
+    clearTimeout(completionTimeout);
     stopTiming();
     removeResize();
   }};

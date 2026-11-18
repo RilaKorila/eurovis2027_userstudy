@@ -67,6 +67,9 @@ def validate_submission(payload, study, answers, algorithms):
     require(isinstance(payload, dict), "Invalid submission")
     require(all(payload[field] == study[field] for field in VERSIONS), "Study versions differ")
     require(payload["group_id"] in study["groups"], "Invalid group")
+    user_id = payload.get("user_id")
+    require(isinstance(user_id, str) and 1 <= len(user_id) <= 128 and user_id == user_id.strip(),
+            "Invalid student ID")
     assigned = study["groups"][payload["group_id"]]
     records = payload["trials"]
     require(isinstance(records, list) and len(records) == len(assigned), "Expected six complete trials")
@@ -114,7 +117,7 @@ def validate_submission(payload, study, answers, algorithms):
     return {
         **{field: study[field] for field in VERSIONS},
         "session_id": session_id, "submission_id": submission_id,
-        "participant_id": uuid_text(payload["participant_id"]), "group_id": payload["group_id"],
+        "participant_id": uuid_text(payload["participant_id"]), "user_id": user_id, "group_id": payload["group_id"],
         "started_at_utc": utc_text(payload["started_at_utc"]),
         "submitted_at_utc": utc_text(payload["submitted_at_utc"]),
         "status": "submitted", "environment": environment,

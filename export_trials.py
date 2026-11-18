@@ -7,7 +7,7 @@ from contextlib import closing
 from pathlib import Path
 
 SESSION_FIELDS = ("study_version", "stimulus_manifest_version", "assignment_version", "participant_id",
-                  "session_id", "submission_id", "group_id", "received_at_utc")
+                  "session_id", "submission_id", "user_id", "group_id", "received_at_utc")
 TRIAL_FIELDS = (
     "trial_id", "question_id", "is_practice", "trial_index", "layout_condition_id", "stimulus_id",
     "stimulus_sha256", "dataset_id", "event_id", "source_timestamp", "target_timestamp",
@@ -44,7 +44,8 @@ def main():
         writer = csv.DictWriter(stream, fieldnames=fields)
         writer.writeheader()
         for session in records:
-            metadata = {field: session[field] for field in SESSION_FIELDS}
+            metadata = {field: session.get(field, "") if field == "user_id" else session[field]
+                        for field in SESSION_FIELDS}
             for trial in session["trials"]:
                 if not trial["is_practice"]:
                     writer.writerow({**metadata, **{field: trial[field] for field in TRIAL_FIELDS},

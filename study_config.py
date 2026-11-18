@@ -18,7 +18,7 @@ INTRO = [
     "練習1問と本番5問に回答します。",
     "前後2時刻の図を見比べて、A〜Dから回答を1つ選んでください。",
     "回答を確定した後に、自信度を答えてください。",
-    "本番の各問の後は、自分のペースで休憩できます。",
+    "次の問題は、開始確認の画面で準備ができてから始めてください。",
     "最後に「回答をまとめて送信」を押してください。",
 ]
 
@@ -101,15 +101,18 @@ def preview_config():
     }
 
 
-def load_study(mode, config_dir):
+def load_study(mode, config_dir, cloud_json=None):
     require(mode in ("preview", "production"), "STUDY_MODE must be preview or production")
     preview = mode == "preview"
     if preview:
         config = preview_config()
         answers = dict(zip(("P0", *QUESTIONS), [OPTIONS[(i + 1) % 4] for i in range(6)]))
     else:
-        config = read_json(config_dir / "study-config.json")
-        key = read_json(config_dir / "answer-key.json")
+        if cloud_json is None:
+            config = read_json(config_dir / "study-config.json")
+            key = read_json(config_dir / "answer-key.json")
+        else:
+            config, key = map(json.loads, cloud_json)
         require(config.get("ready_for_participants") is True, "Study is not marked ready")
         require(not has_placeholder(config) and not has_placeholder(key), "Placeholder in study configuration")
         require(key["stimulus_manifest_version"] == config["stimulus_manifest_version"],

@@ -21,3 +21,9 @@ input { accent-color: #285c97; }
 .action:disabled { background: #e1e6ec; color: #505a65; cursor: default; }
 .action:focus-visible, input:focus-visible { outline: 3px solid #2782ce; outline-offset: 2px; }
 [hidden] { display: none !important; }
+.completion-splash { min-height: 180px; display: grid; align-content: center; justify-items: center; gap: 12px; }
+.completion-splash h1 { margin: 0; }
+.completion-mark { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: #e6f4ed; color: #206143; font-size: 1.65rem; }
+
+.student-id-label { display: flex; flex-direction: column; align-items: flex-start; border: 0; padding: 0; margin: 12px 0; font-weight: 650; cursor: default; }
+.student-id-label input { width: min(100%, 300px); box-sizing: border-box; border: 1px solid #becddd; border-radius: 6px; padding: 8px 12px; font: inherit; font-weight: 400; }
