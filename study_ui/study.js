@@ -318,7 +318,7 @@ function start(root, study, emit) {
           go(state.index === 0 ? "feedback" : "break");
         }, true);
         panel.append(choices("confidence", study.confidence.prompt,
-          study.confidence.options.map(({value, label}) => [value, label]), value => {
+          [...study.confidence.options].reverse().map(({value, label}) => [value, label]), value => {
             rating = value;
             next.disabled = false;
           }), next);

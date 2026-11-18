@@ -4,13 +4,12 @@ Streamlitとブラウザ内のJavaScriptで、練習1問と本番5問の回答�
 
 ## 開発プレビュー
 
-Python 3.12で確認しています。
+Python 3.12で確認しています。リポジトリのルートで次を実行します。fish、zsh、bashのいずれでも、仮想環境のPythonを直接使えます。
 
 ```sh
 python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-streamlit run streamlit_app.py
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -m streamlit run streamlit_app.py
 ```
 
 Streamlitが表示するURLをPCのブラウザで開きます。プレビューは合成画像を使い、結果を `.study-data/preview.sqlite3` に保存します。Groupごとの違いは引継ぎ用の設定例どおりです。回答途中に再読み込みしても同じタブで復帰できます。
@@ -38,7 +37,7 @@ Streamlitが表示するURLをPCのブラウザで開きます。プレビュー
    # Google Cloudで発行したサービスアカウントJSONの各項目をTOMLで設定
    ```
 
-5. 実施前に `ready_for_participants=true` を設定し、HTTPSの公開先を用意します。起動は `STUDY_MODE=production streamlit run streamlit_app.py` です。設定を別の非公開ディレクトリに置く場合は `STUDY_CONFIG_DIR` で指定できます。設定や画像を更新したら該当versionを上げて再起動し、参加者募集から回収まで同じversionを運用します。
+5. 実施前に `ready_for_participants=true` を設定し、HTTPSの公開先を用意します。起動は `env STUDY_MODE=production .venv/bin/python -m streamlit run streamlit_app.py` です。設定を別の非公開ディレクトリに置く場合は `STUDY_CONFIG_DIR` で指定できます。設定や画像を更新したら該当versionを上げて再起動し、参加者募集から回収まで同じversionを運用します。
 
 本番正解表とGoogle認証情報はサーバー側に置きます。公開アセットに入れるのは刺激画像だけです。参加者側の保存成功表示はSheetsの応答、または同一内容の保存済み行の確認後に出ます。
 
@@ -49,6 +48,6 @@ Sheetsでは `submission_id` に対応する名前付き範囲の登録と回答
 対象タブをGoogle SheetsからCSVとしてダウンロードし、次を実行します。練習を除いた本番回答を1件1行で展開します。元のセッションJSONには練習と中断の記録も残ります。
 
 ```sh
-python export_trials.py session-responses.csv main-trials.csv
-python export_trials.py .study-data/preview.sqlite3 preview-trials.csv
+.venv/bin/python export_trials.py session-responses.csv main-trials.csv
+.venv/bin/python export_trials.py .study-data/preview.sqlite3 preview-trials.csv
 ```
