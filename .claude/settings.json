@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "deny": ["Read(/.streamlit/secrets.toml)"]
+  },
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "allowUnsandboxedCommands": false,
+    "filesystem": {
+      "denyRead": [".streamlit/secrets.toml"]
+    }
+  }
+}

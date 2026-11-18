@@ -1,0 +1,7 @@
+default_permissions = "study-workspace"
+
+[permissions.study-workspace]
+extends = ":workspace"
+
+[permissions.study-workspace.filesystem.":workspace_roots"]
+".streamlit/secrets.toml" = "deny"
