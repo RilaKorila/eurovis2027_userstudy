@@ -8,7 +8,6 @@ from urllib.parse import quote
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parent
-EXAMPLES = ROOT / "steerings/user-study-webapp-requirements"
 GROUPS = ("A", "B", "C")
 OPTIONS = ("A", "B", "C", "D")
 LAYOUTS = ("L1", "L2", "L3")
@@ -64,12 +63,49 @@ def demo_image(index, layout):
     return "data:image/svg+xml," + quote(svg, safe=""), hashlib.sha256(svg.encode()).hexdigest()
 
 
+def preview_config():
+    """Build the synthetic demo independently of the local study materials."""
+    question = {
+        "prompt": "後の時刻（t1）で、Pと線で直接つながっているノードはどれですか？",
+        "definition": "つながる：異なるグループの所属ノード間に線が1本以上あること。",
+        "option_ids": OPTIONS,
+    }
+    labels = (
+        "まったく自信がない", "あまり自信がない", "どちらともいえない",
+        "やや自信がある", "とても自信がある",
+    )
+    return {
+        "study_version": "preview-v1",
+        "stimulus_manifest_version": "synthetic-v1",
+        "assignment_version": "rotation-5q-v1",
+        "layout_conditions": {layout: {"researcher_algorithm_name": f"Synthetic {layout}"}
+                              for layout in LAYOUTS},
+        "groups": {
+            group: {"trials": [
+                {"question_id": qid, "layout_condition_id": LAYOUTS[(offset + index) % len(LAYOUTS)]}
+                for index, qid in enumerate(QUESTIONS)
+            ]}
+            for offset, group in enumerate(GROUPS)
+        },
+        "practice": dict(question, question_id="P0", stimulus_id="P0-practice"),
+        "questions": {
+            qid: dict(question, variants={layout: {"stimulus_id": f"{qid}-{layout}"} for layout in LAYOUTS})
+            for qid in QUESTIONS
+        },
+        "confidence": {
+            "prompt": "今の回答に、どのくらい自信がありますか？",
+            "options": [{"value": value, "label": label} for value, label in enumerate(labels, 1)],
+            "default": None,
+        },
+        "display": {"minimum_viewport_width": 900, "minimum_viewport_height": 600},
+    }
+
+
 def load_study(mode, config_dir):
     require(mode in ("preview", "production"), "STUDY_MODE must be preview or production")
     preview = mode == "preview"
     if preview:
-        config = read_json(EXAMPLES / "study-config.example.json")
-        config.update(stimulus_manifest_version="synthetic-v1", study_version="preview-v1")
+        config = preview_config()
         answers = dict(zip(("P0", *QUESTIONS), [OPTIONS[(i + 1) % 4] for i in range(6)]))
     else:
         config = read_json(config_dir / "study-config.json")
@@ -95,8 +131,6 @@ def load_study(mode, config_dir):
             and all(isinstance(option["label"], str) and option["label"].strip()
                     for option in confidence["options"]), "Missing confidence text")
     display = [config["display"][f"minimum_viewport_{axis}"] for axis in ("width", "height")]
-    if preview:
-        display = [900, 600]
     require(all(type(value) is int and value > 0 for value in display), "Set a positive minimum viewport")
     algorithms = {layout: config["layout_conditions"][layout]["researcher_algorithm_name"] for layout in LAYOUTS}
     require(all(isinstance(name, str) and name.strip() for name in algorithms.values()), "Missing algorithm name")
@@ -125,7 +159,6 @@ def load_study(mode, config_dir):
             prompt = question["prompt"]
             if preview:
                 url, digest = demo_image(index, layout_index)
-                prompt = "後の時刻（t1）で、Pと線で直接つながっているノードはどれですか？"
                 source = dict(zip(SOURCE_FIELDS, ("synthetic", question_id, "t0", "t1")))
             else:
                 relpath = Path(variant["image_path"])
