@@ -43,6 +43,9 @@ Streamlitが表示するURLをPCのブラウザで開きます。プレビュー
 
 Sheetsでは `submission_id` に対応する名前付き範囲の登録と回答行の追加を一括更新します。同一IDが既にあれば行の追加も失敗し、サーバーが保存済み行の内容を照合します。受け付け中は記録タブの行や `submission_` で始まる名前付き範囲を編集・削除しないでください。最初の本番利用前に、テスト用シートで同時送信と応答喪失後の再送を確認してください。
 
+本番設定のSheets:
+https://docs.google.com/spreadsheets/d/19mcWAPMtFesaaaJDEaMJDX8gG0qB9IhztPsM_XfN9zA/edit
+
 ## 研究者用CSV
 
 対象タブをGoogle SheetsからCSVとしてダウンロードし、次を実行します。練習を除いた本番回答を1件1行で展開します。元のセッションJSONには練習と中断の記録も残ります。
