@@ -19,8 +19,9 @@ def study_settings(mode, config_dir, cloud_json):
 
 
 def save(submission, mode):
-    if mode == "preview":
-        PreviewStore(Path(os.environ.get("STUDY_PREVIEW_DB", ROOT / ".study-data/preview.sqlite3"))).save(submission)
+    if mode in ("preview", "tmp"):
+        default_db = ROOT / ".study-data" / f"{mode}.sqlite3"
+        PreviewStore(Path(os.environ.get("STUDY_PREVIEW_DB", default_db))).save(submission)
         return
     from google.oauth2.service_account import Credentials
     from googleapiclient.discovery import build

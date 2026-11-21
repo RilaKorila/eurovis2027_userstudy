@@ -290,7 +290,10 @@ function start(root, study, emit) {
     removeResize = () => {};
     ++renderId;
     const header = el("header", "グラフの比較実験");
-    if (study.preview) header.append(el("span", "開発プレビュー", "preview"));
+    if (study.preview) {
+      const label = study.study_version.startsWith("tmp-") ? "tmp-動作確認" : "開発プレビュー";
+      header.append(el("span", label, "preview"));
+    }
     const h = el("h1", title);
     h.tabIndex = -1;
     const panel = el("section", undefined, "panel");

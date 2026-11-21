@@ -102,7 +102,7 @@ def preview_config():
 
 
 def load_study(mode, config_dir, cloud_json=None):
-    require(mode in ("preview", "production"), "STUDY_MODE must be preview or production")
+    require(mode in ("preview", "tmp", "production"), "STUDY_MODE must be preview, tmp, or production")
     preview = mode == "preview"
     if preview:
         config = preview_config()
@@ -113,7 +113,8 @@ def load_study(mode, config_dir, cloud_json=None):
             key = read_json(config_dir / "answer-key.json")
         else:
             config, key = map(json.loads, cloud_json)
-        require(config.get("ready_for_participants") is True, "Study is not marked ready")
+        if mode == "production":
+            require(config.get("ready_for_participants") is True, "Study is not marked ready")
         require(not has_placeholder(config) and not has_placeholder(key), "Placeholder in study configuration")
         require(key["stimulus_manifest_version"] == config["stimulus_manifest_version"],
                 "Answer key version differs from the stimulus manifest")
@@ -121,7 +122,11 @@ def load_study(mode, config_dir, cloud_json=None):
 
     versions = {field: config[field] for field in VERSIONS}
     require(all(isinstance(v, str) and v.strip() for v in versions.values()), "Missing study version")
-    require(preview or not versions["study_version"].lower().startswith("preview"), "Use a production study version")
+    if mode == "tmp":
+        require(all(v.startswith("tmp-") for v in versions.values()), "Temporary versions must start with tmp-")
+    elif mode == "production":
+        require(not any(v.lower().startswith(("preview", "tmp-")) for v in versions.values()),
+                "Use production study, stimulus, and assignment versions")
     require(set(config["groups"]) == set(GROUPS), "Expected Groups A, B, C")
     require(set(config["questions"]) == set(QUESTIONS), "Expected Q1–Q5")
     require(set(config["layout_conditions"]) == set(LAYOUTS), "Expected layouts L1–L3")
@@ -203,7 +208,7 @@ def load_study(mode, config_dir, cloud_json=None):
 
     feedback = "t1で、Pから伸びている線の先を確認してください。" if preview else config["practice"]["feedback"]
     require(isinstance(feedback, str) and feedback.strip(), "Set practice feedback")
-    public = dict(versions, preview=preview, minimum_viewport=display, groups=groups,
+    public = dict(versions, preview=(mode != "production"), minimum_viewport=display, groups=groups,
                   confidence=confidence, introduction=intro,
                   practice_feedback={"answer": answers["P0"], "explanation": feedback})
     return public, answers, algorithms
