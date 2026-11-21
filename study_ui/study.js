@@ -312,6 +312,10 @@ function start(root, study, emit) {
         Object.assign(input, {type: "text", id: "student-id", maxLength: 128, value: state.user_id || "", autocomplete: "off"});
         label.htmlFor = input.id;
         label.append(el("span", "学籍番号"), input);
+        const error = el("p", "半角数字で入力してください", "error");
+        error.id = "student-id-error";
+        error.hidden = true;
+        input.setAttribute("aria-describedby", error.id);
         let selected;
         const next = button(returning ? "続ける" : "説明へ", () => {
           state.user_id = input.value.trim();
@@ -325,9 +329,14 @@ function start(root, study, emit) {
             go("instructions");
           }
         }, true);
-        const refresh = () => { next.disabled = !input.value.trim() || (!returning && !selected); };
+        const refresh = () => {
+          const invalid = input.value !== "" && !/^[0-9]+$/.test(input.value);
+          error.hidden = !invalid;
+          input.setAttribute("aria-invalid", String(invalid));
+          next.disabled = !input.value || invalid || (!returning && !selected);
+        };
         input.addEventListener("input", refresh);
-        panel.append(label);
+        panel.append(label, error);
         if (!returning) {
           panel.append(choices("group", "グループ", ["A", "B", "C"].map(id => [id, "Group " + id]),
                                value => { selected = value; refresh(); }));
@@ -340,15 +349,19 @@ function start(root, study, emit) {
         const panel = layout("実験の説明");
         const instructions = el("ol");
         for (const line of study.introduction) instructions.append(el("li", line));
+        const back = button("グループを変更", () => go("group"));
+        back.classList.add("secondary");
         panel.append(instructions, el("p", currentTrial().definition, "muted"),
-          button("練習へ", () => go("confirm")), button("グループを変更", () => go("group")));
+          button("練習へ", () => go("confirm")), back);
         break;
       }
       case "confirm": {
         const panel = layout(trialTitle());
         confirm(panel, renderId);
         if (state.index === 0 && !state.group_locked) {
-          panel.append(button("グループを変更", () => go("group")));
+          const back = button("グループを変更", () => go("group"));
+          back.classList.add("secondary");
+          panel.append(back);
         }
         break;
       }
