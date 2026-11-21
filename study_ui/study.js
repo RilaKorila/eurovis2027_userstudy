@@ -10,7 +10,7 @@ const introduction = [
     ],
     repeat: "上記の流れを、6問分繰り返します。",
     submit: "最後に「回答をまとめて送信」を押してください。",
-    complete: "「回答完了しました」の文言が出れば実験完了です。",
+    complete: "「送信が完了しました。」の文言が出れば実験完了です。",
   },
 
 ];
@@ -428,7 +428,7 @@ function start(root, study, emit) {
         break;
       }
       case "done":
-        layout("回答完了しました").append(el("p", "ご協力ありがとうございました。"));
+        layout("送信完了").append(el("p", "送信が完了しました。ご協力ありがとうございました。"));
         break;
     }
   }
