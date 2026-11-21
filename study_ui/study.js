@@ -1,4 +1,5 @@
 const versions = ["study_version", "stimulus_manifest_version", "assignment_version"];
+const connectionNote = "この実験で「つながる」とは、2つのグループを直接結ぶ線（エッジ）が少なくとも1本あることを指します。";
 const introduction = [
   {
     lang: "ja",
@@ -14,6 +15,87 @@ const introduction = [
   },
 
 ];
+// Translate visible text in place so switching languages never restarts a timed trial
+// or clears an answer already selected by the participant.
+const english = {
+  [connectionNote]: "In this study, “connected” means that at least one edge directly links the two groups.",
+  "グラフの比較実験": "Graph Comparison Study",
+  "開発プレビュー": "Development preview",
+  "練習問題": "Practice question",
+  "準備ができたら開始してください。": "Start when you are ready.",
+  "問題を開始する": "Start question",
+  "画像の読み込みを再試行": "Retry loading image",
+  "画像を読み込めませんでした。": "The image could not be loaded.",
+  "画像を読み込んでいます…": "Loading image…",
+  "前後2時刻のグラフ": "Graphs at two consecutive time points",
+  "回答を確定して次へ": "Confirm answer and continue",
+  "回答": "Answer",
+  "回答を保存しました": "Your responses have been saved",
+  "学籍番号の入力": "Enter your student ID",
+  "参加グループ": "Participant group",
+  "学籍番号を入力してください。": "Please enter your student ID.",
+  "学籍番号を入力し、事前に指定されたグループを選んでください。": "Enter your student ID and select the group assigned to you.",
+  "学籍番号": "Student ID",
+  "半角数字で入力してください": "Enter numbers using digits 0–9.",
+  "続ける": "Continue",
+  "説明へ": "Continue to instructions",
+  "グループ": "Group",
+  "実験の説明": "Study instructions",
+  "グループを変更": "Change group",
+  "練習問題へ": "Continue to practice",
+  "次へ": "Next",
+  "練習の解説": "Practice explanation",
+  "練習問題やり直す": "Retry practice question",
+  "本番へ": "Continue to main questions",
+  "送信確認": "Confirm submission",
+  "本番5問の回答と自信度が揃いました。送信して終了してください。": "You have answered all five main questions and rated your confidence. Submit your responses to finish.",
+  "保存完了を待っています…": "Waiting for confirmation…",
+  "保存の完了を確認できませんでした。回答は保持されています。再送信してください。": "Could not confirm that your responses were saved. Your responses are retained. Please submit again.",
+  "送信中…": "Submitting…",
+  "再送信": "Submit again",
+  "回答をまとめて送信": "Submit all responses",
+  "回答完了しました": "Responses submitted",
+  "送信完了": "Submission complete",
+  "送信が完了しました。ご協力ありがとうございました。": "Your responses have been submitted. Thank you for participating.",
+  "ご協力ありがとうございました。": "Thank you for participating.",
+  "回答を保持できません。研究担当者へご連絡ください。": "Your responses could not be retained. Please contact the researcher.",
+  "実験を開始できません。ブラウザの設定をご確認ください。": "The study could not be started. Please check your browser settings.",
+  "練習1問と本番5問があります。": "There is one practice question and five main questions.",
+  "各問題で回答時間も計測しています。一問 開始したら、最後まで途切れずに受けてください。（各問題の間は少しの休憩可能ですが、長時間放置するとセッションが切れて最初からやり直しになる可能性があるのでご注意ください。）": "Your response time is measured for each question. Once you start a question, please complete it without interruption. You may take a short break between questions, but a long period of inactivity may end your session and require you to start over.",
+  "問題文をよく読み、選択肢 A - D の中から適切なものを選択し回答してください。": "Read each question carefully and select the appropriate answer from options A–D.",
+  "その問題に対して、自分の回答に対する自信度合いを5段階で回答してください。": "Rate your confidence in your answer on a five-point scale.",
+  "上記の流れを、6問分繰り返します。": "Repeat these steps for all six questions.",
+  "最後に「回答をまとめて送信」を押してください。": "Finally, select “Submit all responses.”",
+  "「送信が完了しました。」の文言が出れば実験完了です。": "The study is complete when “Your responses have been submitted” appears.",
+  "左の図でPとつながり、右の図でX・Yの両方とつながるグループは、A〜Dのどれですか？": "Which group, A–D, is connected to P in the left graph and to both X and Y in the right graph?",
+  "左の図でPとつながり、右の図でX・Yの片方だけとつながるグループは、A〜Dのどれですか？": "Which group, A–D, is connected to P in the left graph and to only one of X and Y in the right graph?",
+  "左右の図は、連続する2つのタイムスタンプのグラフを表しています。左の図のグループXは、次のタイムスタンプを表す右の図では、XとYの2つに分裂しています。": "The left and right graphs represent two consecutive time points. Group X in the left graph splits into X and Y in the right graph, which represents the next time point.",
+  "正解はDです。左ではDとPの間に線があります。右ではDとX、DとYの間に線があります。": "The correct answer is D. In the left graph, there is a line between D and P. In the right graph, there are lines between D and X and between D and Y.",
+  "後の時刻（t1）で、Pと線で直接つながっているノードはどれですか？": "At the later time point (t1), which node is directly connected to P by a line?",
+  "つながる：異なるグループの所属ノード間に線が1本以上あること。": "Connected means that at least one line joins nodes belonging to different groups.",
+  "\"つながる\"の定義: 異なるグループの所属ノード間に線が1本以上あること。": "“Connected” means that at least one line joins nodes belonging to different groups.",
+  "t1で、Pから伸びている線の先を確認してください。": "At t1, check where the line from P leads.",
+  "今の回答に、どのくらい自信がありますか？": "How confident are you in your answer?",
+  "まったく自信がない": "Not at all confident",
+  "あまり自信がない": "Not very confident",
+  "どちらともいえない": "Neither confident nor unconfident",
+  "やや自信がある": "Somewhat confident",
+  "とても自信がある": "Very confident"
+};
+function englishText(text) {
+  if (Object.hasOwn(english, text)) return english[text];
+  let match = text.match(/^本番 第(\d+)問 \/ 全(\d+)問$/);
+  if (match) return `Main question ${match[1]} of ${match[2]}`;
+  match = text.match(/^選択グループ：Group (.+)$/);
+  if (match) return `Selected group: Group ${match[1]}`;
+  match = text.match(/^表示領域を (.+) ピクセル以上にしてください。$/);
+  if (match) return `Please make the viewport at least ${match[1]} pixels.`;
+  match = text.match(/^正解は (.+) です。$/);
+  if (match) return `The correct answer is ${match[1]}.`;
+  match = text.match(/^Group (.+) ／ 練習1問・本番5問$/);
+  if (match) return `Group ${match[1]} / 1 practice question and 5 main questions`;
+  return text;
+}
 const trialFields = ["trial_index", "question_id", "layout_condition_id", "stimulus_id", "stimulus_sha256"];
 const utc = () => new Date().toISOString();
 const pick = (source, keys) => Object.fromEntries(keys.map(key => [key, source[key]]));
@@ -68,6 +150,32 @@ function start(root, study, emit) {
   let frame;
   let failed = false;
   let storageError = false;
+  let language = "ja";
+  try { language = sessionStorage.getItem("graph-view-language") === "en" ? "en" : "ja"; } catch { /* Preference is optional. */ }
+  const originals = new WeakMap();
+  function translate() {
+    root.lang = language;
+    root.querySelectorAll(".introduction").forEach(content => { content.lang = language; });
+    root.querySelector(".languages")?.setAttribute("aria-label", language === "en" ? "Language" : "言語");
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      const previous = originals.get(node);
+      if (!previous || (node.data !== previous.ja && node.data !== previous.en)) {
+        originals.set(node, {ja: node.data, en: englishText(node.data)});
+      }
+      const text = originals.get(node)[language];
+      if (node.data !== text) node.data = text;
+    }
+    root.querySelectorAll("img").forEach(image => {
+      image.alt = language === "en" ? "Graphs at two consecutive time points" : "前後2時刻のグラフ";
+    });
+    root.querySelectorAll("[data-language]").forEach(control => {
+      control.setAttribute("aria-pressed", String(control.dataset.language === language));
+    });
+  }
+  const observer = new MutationObserver(translate);
+  observer.observe(root, {subtree: true, childList: true, characterData: true});
 
   function save() {
     if (storageError) return false;
@@ -202,7 +310,8 @@ function start(root, study, emit) {
     const trial = currentTrial();
     const panel = layout(trialTitle(), false);
     panel.style.visibility = "hidden";
-    panel.append(el("p", trial.prompt, "prompt"), el("p", trial.definition, "muted"), image);
+    panel.append(el("p", trial.prompt, "prompt"), el("p", trial.definition, "muted"),
+      el("p", connectionNote, "muted"), image);
     let answer;
     const next = button("回答を確定して次へ", () => {
       if (!answer || timedStart === undefined || state.screen !== "question" || next.disabled) return;
@@ -305,6 +414,18 @@ function start(root, study, emit) {
     ++renderId;
     const header = el("header", "グラフの比較実験");
     if (study.preview) header.append(el("span", "開発プレビュー", "preview"));
+    const languages = el("nav", undefined, "languages");
+    for (const code of ["ja", "en"]) {
+      const control = button(code.toUpperCase(), () => {
+        language = code;
+        try { sessionStorage.setItem("graph-view-language", code); } catch { /* Preference is optional. */ }
+        translate();
+      });
+      control.dataset.language = code;
+      control.lang = code;
+      languages.append(control);
+    }
+    header.append(languages);
     const h = el("h1", title);
     h.tabIndex = -1;
     const panel = el("section", undefined, "panel");
@@ -314,6 +435,7 @@ function start(root, study, emit) {
       root.append(el("p", `選択グループ：Group ${state.group_id}`, "selected-group muted"));
     }
     root.append(panel);
+    translate();
     if (focusHeading) h.focus({preventScroll: true});
     return panel;
   }
@@ -436,6 +558,7 @@ function start(root, study, emit) {
   if (save()) render();
   return {update, dispose() {
     disposed = true;
+    observer.disconnect();
     clearTimeout(timeout);
     clearTimeout(completionTimeout);
     stopTiming();
