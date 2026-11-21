@@ -14,14 +14,13 @@ UI = ROOT / "study_ui"
 
 
 @st.cache_data
-def study_settings(mode, config_dir, cloud_json):
-    return load_study(mode, config_dir, cloud_json)
+def study_settings(mode, config_dir, cloud_json, local_preview):
+    return load_study(mode, config_dir, cloud_json, local_preview=local_preview)
 
 
 def save(submission, mode):
-    if mode in ("preview", "tmp"):
-        default_db = ROOT / ".study-data" / f"{mode}.sqlite3"
-        PreviewStore(Path(os.environ.get("STUDY_PREVIEW_DB", default_db))).save(submission)
+    if mode == "preview":
+        PreviewStore(Path(os.environ.get("STUDY_PREVIEW_DB", ROOT / ".study-data/preview.sqlite3"))).save(submission)
         return
     from google.oauth2.service_account import Credentials
     from googleapiclient.discovery import build
@@ -37,7 +36,8 @@ def save(submission, mode):
 
 def main():
     st.set_page_config(page_title="グラフの比較実験", layout="wide")
-    config_dir = Path(os.environ.get("STUDY_CONFIG_DIR", ROOT / "study-private"))
+    configured_dir = os.environ.get("STUDY_CONFIG_DIR")
+    config_dir = Path(configured_dir) if configured_dir else ROOT / "study-private"
     try:
         mode = os.environ.get("STUDY_MODE")
         if mode is None:
@@ -55,7 +55,7 @@ def main():
             if not st.secrets["study_sheets"]["spreadsheet_id"] or not st.secrets["google_service_account"]:
                 raise ValueError("Missing Google Sheets settings")
             int(st.secrets["study_sheets"]["sheet_id"])
-        study, answers, algorithms = study_settings(mode, config_dir, cloud_json)
+        study, answers, algorithms = study_settings(mode, config_dir, cloud_json, local_preview=bool(configured_dir))
     except Exception:
         LOGGER.exception("Study startup validation failed")
         st.error("実験を開始できません。研究担当者へご連絡ください。")

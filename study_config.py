@@ -37,7 +37,7 @@ def has_placeholder(value):
         return any(has_placeholder(item) for item in value.values())
     if isinstance(value, list):
         return any(has_placeholder(item) for item in value)
-    return isinstance(value, str) and "PLACEHOLDER" in value.upper()
+    return isinstance(value, str) and ("PLACEHOLDER" in value.upper() or value.lower().startswith("tmp-"))
 
 
 def demo_image(index, layout):
@@ -101,10 +101,11 @@ def preview_config():
     }
 
 
-def load_study(mode, config_dir, cloud_json=None):
-    require(mode in ("preview", "tmp", "production"), "STUDY_MODE must be preview, tmp, or production")
+def load_study(mode, config_dir, cloud_json=None, *, local_preview=False):
+    require(mode in ("preview", "production"), "STUDY_MODE must be preview or production")
     preview = mode == "preview"
-    if preview:
+    synthetic = preview and not local_preview
+    if synthetic:
         config = preview_config()
         answers = dict(zip(("P0", *QUESTIONS), [OPTIONS[(i + 1) % 4] for i in range(6)]))
     else:
@@ -115,18 +116,14 @@ def load_study(mode, config_dir, cloud_json=None):
             config, key = map(json.loads, cloud_json)
         if mode == "production":
             require(config.get("ready_for_participants") is True, "Study is not marked ready")
-        require(not has_placeholder(config) and not has_placeholder(key), "Placeholder in study configuration")
+            require(not has_placeholder(config) and not has_placeholder(key), "Placeholder in study configuration")
         require(key["stimulus_manifest_version"] == config["stimulus_manifest_version"],
                 "Answer key version differs from the stimulus manifest")
         answers = key["correct_option_ids"]
 
     versions = {field: config[field] for field in VERSIONS}
     require(all(isinstance(v, str) and v.strip() for v in versions.values()), "Missing study version")
-    if mode == "tmp":
-        require(all(v.startswith("tmp-") for v in versions.values()), "Temporary versions must start with tmp-")
-    elif mode == "production":
-        require(not any(v.lower().startswith(("preview", "tmp-")) for v in versions.values()),
-                "Use production study, stimulus, and assignment versions")
+    require(preview or not versions["study_version"].lower().startswith("preview"), "Use a production study version")
     require(set(config["groups"]) == set(GROUPS), "Expected Groups A, B, C")
     require(set(config["questions"]) == set(QUESTIONS), "Expected Q1–Q5")
     require(set(config["layout_conditions"]) == set(LAYOUTS), "Expected layouts L1–L3")
@@ -165,7 +162,7 @@ def load_study(mode, config_dir, cloud_json=None):
             used_ids.add(stimulus_id)
             source = {field: question.get(field) for field in SOURCE_FIELDS}
             prompt = question["prompt"]
-            if preview:
+            if synthetic:
                 url, digest = demo_image(index, layout_index)
                 source = dict(zip(SOURCE_FIELDS, ("synthetic", question_id, "t0", "t1")))
             else:
@@ -206,9 +203,9 @@ def load_study(mode, config_dir, cloud_json=None):
             dict(stimuli[key], trial_index=i, is_practice=i == 0) for i, key in enumerate(keys)
         ]
 
-    feedback = "t1で、Pから伸びている線の先を確認してください。" if preview else config["practice"]["feedback"]
+    feedback = "t1で、Pから伸びている線の先を確認してください。" if synthetic else config["practice"]["feedback"]
     require(isinstance(feedback, str) and feedback.strip(), "Set practice feedback")
-    public = dict(versions, preview=(mode != "production"), minimum_viewport=display, groups=groups,
+    public = dict(versions, preview=preview, minimum_viewport=display, groups=groups,
                   confidence=confidence, introduction=intro,
                   practice_feedback={"answer": answers["P0"], "explanation": feedback})
     return public, answers, algorithms
