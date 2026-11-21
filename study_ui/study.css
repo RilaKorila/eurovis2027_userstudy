@@ -32,3 +32,6 @@ input { accent-color: #285c97; }
 
 .student-id-label { display: flex; flex-direction: column; align-items: flex-start; border: 0; padding: 0; margin: 12px 0; font-weight: 650; cursor: default; }
 .student-id-label input { width: min(100%, 300px); box-sizing: border-box; border: 1px solid #becddd; border-radius: 6px; padding: 8px 12px; font: inherit; font-weight: 400; }
+.languages { margin-left: auto; display: flex; gap: 4px; }
+.languages .action { margin: 0; padding: 4px 9px; background: #fff; color: #184f82; border-color: #becddd; }
+.languages .action[aria-pressed="true"] { background: #184f82; color: #fff; border-color: #184f82; }
