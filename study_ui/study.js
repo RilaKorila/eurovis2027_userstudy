@@ -81,7 +81,7 @@ const english = {
   "とても自信がある": "Very confident"
 };
 function englishText(text) {
-  if (english[text]) return english[text];
+  if (Object.hasOwn(english, text)) return english[text];
   let match = text.match(/^本番 第(\d+)問 \/ 全(\d+)問$/);
   if (match) return `Main question ${match[1]} of ${match[2]}`;
   match = text.match(/^選択グループ：Group (.+)$/);
@@ -154,6 +154,7 @@ function start(root, study, emit) {
   function translate() {
     root.lang = language;
     root.querySelectorAll(".introduction").forEach(content => { content.lang = language; });
+    root.querySelector(".languages")?.setAttribute("aria-label", language === "en" ? "Language" : "言語");
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     while (walker.nextNode()) {
       const node = walker.currentNode;
@@ -411,7 +412,6 @@ function start(root, study, emit) {
     const header = el("header", "グラフの比較実験");
     if (study.preview) header.append(el("span", "開発プレビュー", "preview"));
     const languages = el("nav", undefined, "languages");
-    languages.setAttribute("aria-label", "Language / 言語");
     for (const code of ["ja", "en"]) {
       const control = button(code.toUpperCase(), () => {
         language = code;
@@ -419,6 +419,7 @@ function start(root, study, emit) {
         translate();
       });
       control.dataset.language = code;
+      control.lang = code;
       languages.append(control);
     }
     header.append(languages);
@@ -431,6 +432,7 @@ function start(root, study, emit) {
       root.append(el("p", `選択グループ：Group ${state.group_id}`, "selected-group muted"));
     }
     root.append(panel);
+    translate();
     if (focusHeading) h.focus({preventScroll: true});
     return panel;
   }

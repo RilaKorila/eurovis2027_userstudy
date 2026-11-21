@@ -35,7 +35,7 @@ def save(submission, mode):
 
 
 def main():
-    st.set_page_config(page_title="グラフの比較実験", layout="wide")
+    st.set_page_config(page_title="グラフの比較実験 / Graph Comparison Study", layout="wide")
     config_dir = Path(os.environ.get("STUDY_CONFIG_DIR", ROOT / "study-private"))
     try:
         mode = os.environ.get("STUDY_MODE")
@@ -57,7 +57,8 @@ def main():
         study, answers, algorithms = study_settings(mode, config_dir, cloud_json)
     except Exception:
         LOGGER.exception("Study startup validation failed")
-        st.error("実験を開始できません。研究担当者へご連絡ください。")
+        st.error("実験を開始できません。研究担当者へご連絡ください。\n\n"
+                 "The study could not be started. Please contact the researcher.")
         return
 
     component = st.components.v2.component(
