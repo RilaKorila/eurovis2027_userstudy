@@ -16,7 +16,7 @@ Streamlitが表示するURLをPCのブラウザで開きます。プレビュー
 
 画像をブラウザでデコードしてから開始ボタンを有効にします。画像・設問・選択肢の初回描画に合わせて計時し、有効な回答確定で停止します。タブが非表示になったりフォーカスを失ったりした場合は別途記録します。回答中の再読み込みは中断として記録し、同じ問題の確認画面へ戻ります。
 
-ローカルに配置した画像と仮の設問を確認するには、`study-private/` の2つのJSONを揃え、`study_version`、`stimulus_manifest_version`、`assignment_version` をすべて `tmp-` で始めます。`ready_for_participants` は `false` のままで起動できます。画面に「tmp-動作確認」と表示され、送信は `.study-data/tmp.sqlite3` に保存されます。
+ローカルに配置した画像と仮の設問を確認するには、`study-private/` の2つのJSONを揃え、`study_version`、`stimulus_manifest_version`、`assignment_version` をすべて `tmp-` で始めます。`ready_for_participants` は `false` のままで起動できます。画面に「動作確認」と表示され、送信は `.study-data/tmp.sqlite3` に保存されます。
 
 ```sh
 env STUDY_MODE=tmp .venv/bin/python -m streamlit run streamlit_app.py
