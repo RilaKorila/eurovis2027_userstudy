@@ -354,8 +354,7 @@ function start(root, study, emit) {
         for (const line of study.introduction) instructions.append(el("li", line));
         const back = button("グループを変更", () => go("group"));
         back.classList.add("secondary");
-        panel.append(instructions, el("p", currentTrial().definition, "muted"),
-          button("練習へ", () => go("confirm")), back);
+        panel.append(instructions, button("練習へ", () => go("confirm")), back);
         break;
       }
       case "confirm": {
