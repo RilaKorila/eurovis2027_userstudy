@@ -148,7 +148,6 @@ function start(root, study, emit) {
     const begin = button("問題を開始する", () => {
       if (!loaded || !fitsViewport() || state.screen !== "confirm") return;
       state.screen = "question";
-      state.group_locked = true;
       if (save()) showQuestion(image);
     }, true);
     const retry = button("画像の読み込みを再試行", load);
@@ -358,11 +357,6 @@ function start(root, study, emit) {
       case "confirm": {
         const panel = layout(trialTitle());
         confirm(panel, renderId);
-        if (state.index === 0 && !state.group_locked) {
-          const back = button("グループを変更", () => go("group"));
-          back.classList.add("secondary");
-          panel.append(back);
-        }
         break;
       }
       case "confidence": {
