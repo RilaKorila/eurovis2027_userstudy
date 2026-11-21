@@ -60,7 +60,7 @@ def preview_config():
     """Build the synthetic demo independently of the local study materials."""
     question = {
         "prompt": "後の時刻（t1）で、Pと線で直接つながっているノードはどれですか？",
-        "definition": "つながる：異なるグループの所属ノード間に線が1本以上あること。",
+        "definition": "\"つながる\"の定義: 異なるグループの所属ノード間に線が1本以上あること。",
         "option_ids": OPTIONS,
     }
     labels = (

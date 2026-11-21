@@ -18,7 +18,7 @@ Streamlitが表示するURLをPCのブラウザで開きます。プレビュー
 
 ## 本番設定
 
-1. 研究担当者から設定例を受け取り、`study-private/study-config.json` と `study-private/answer-key.json` を作ります。正式な設問・選択肢・出典・時刻・正解、練習解説、描画アルゴリズム名、最小viewportとversionを設定します。実験の説明画面の案内文は `study_ui/study.js` で管理します。A〜Dの追加文言は各設問の `option_labels`（IDから文字列への対応）で差し替えられます。
+1. 研究担当者から設定例を受け取り、`study-private/study-config.json` と `study-private/answer-key.json` を作ります。正式な設問・選択肢・出典・時刻・正解、練習解説、描画アルゴリズム名、最小viewportとversionを設定します。実験の説明画面の案内文は `study_ui/study.js` で管理します。各設問の `option_labels`（IDから文字列への対応）は任意で、指定すると選択肢ID（A〜D）の後ろに追加文言を表示します。A〜Dだけを表示する場合は省略してください。
 2. 正式画像16枚を `static/assets/` に配置します。設定の `image_path` は `static/` からの相対パスです。同一問題の3条件は同じ画像寸法にします。SHA-256は起動時に計算し、設定値があれば照合します。画像そのものの読める大きさ、内容、正解の整合は実施端末で研究者が確認してください。
 3. 非公開のスプレッドシートで専用タブを作り、1行目に次のヘッダーを置きます。シートをサービスアカウントに編集者として共有し、Google CloudプロジェクトでSheets APIを有効にします。
 
