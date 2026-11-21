@@ -8,6 +8,8 @@ h1 { font-size: 1.6rem; line-height: 1.28; margin: 0 0 12px; }
 h1:focus { outline: none; }
 p { margin: 0 0 10px; }
 li { margin-bottom: 8px; }
+.introduction p { margin-bottom: 16px; }
+.panel > hr { border: 0; border-top: 1px solid #d2dce6; margin: 20px 0; }
 .muted { color: #47596c; }
 .prompt { font-weight: 650; }
 .error { color: #a12622; }

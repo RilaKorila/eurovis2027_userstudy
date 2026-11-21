@@ -1,9 +1,29 @@
 const versions = ["study_version", "stimulus_manifest_version", "assignment_version"];
 const introduction = [
-  "練習1問と本番5問があります。各問題でA〜Dから答えを1つ選んでください。",
-  "左が分裂前、右が分裂後です。Pは分裂元、XとYは分裂先です。A〜Dは左右で同じ文字が対応します。",
-  "回答を確定した後に、自信度を選んでください。",
-  "最後に「回答をまとめて送信」を押してください。",
+  {
+    lang: "ja",
+    opening: "練習1問と本番5問があります。",
+    timing: "各問題で回答時間も計測しています。一問 開始したら、最後まで途切れずに受けてください。（各問題の間は少しの休憩可能ですが、長時間放置するとセッションが切れて最初からやり直しになる可能性があるのでご注意ください。）",
+    steps: [
+      "問題文をよく読み、選択肢 A - D の中から適切なものを選択し回答してください。",
+      "その問題に対して、自分の回答に対する自信度合いを5段階で回答してください。",
+    ],
+    repeat: "上記の流れを、6問分繰り返します。",
+    submit: "最後に「回答をまとめて送信」を押してください。",
+    complete: "「回答完了しました」の文言が出れば実験完了です。",
+  },
+  {
+    lang: "en",
+    opening: "There is one practice question and five main questions.",
+    timing: "Your response time is measured for each question. Once you start a question, please complete it without interruption. (You may take a short break between questions, but please note that leaving the session idle for too long may cause it to expire, requiring you to start over.)",
+    steps: [
+      "Read the question carefully and select the appropriate answer from options A - D.",
+      "Rate your confidence in your answer to that question on a five-point scale.",
+    ],
+    repeat: "Repeat the steps above for all six questions.",
+    submit: "Finally, press 「回答をまとめて送信」 (Submit all responses).",
+    complete: "The experiment is complete when you see 「回答完了しました」 (Responses completed).",
+  },
 ];
 const trialFields = ["trial_index", "question_id", "layout_condition_id", "stimulus_id", "stimulus_sha256"];
 const utc = () => new Date().toISOString();
@@ -356,11 +376,21 @@ function start(root, study, emit) {
       }
       case "instructions": {
         const panel = layout("実験の説明");
-        const instructions = el("ol");
-        for (const line of introduction) instructions.append(el("li", line));
+        for (const [index, section] of introduction.entries()) {
+          if (index) panel.append(el("hr"));
+          const content = el("div", undefined, "introduction");
+          content.lang = section.lang;
+          const steps = el("ol");
+          for (const line of section.steps) steps.append(el("li", line));
+          const final = el("p", section.submit);
+          final.append(el("br"), document.createTextNode(section.complete));
+          content.append(el("p", section.opening), el("p", section.timing), steps,
+            el("p", section.repeat), final);
+          panel.append(content);
+        }
         const back = button("グループを変更", () => go("group"));
         back.classList.add("secondary");
-        panel.append(instructions, button("練習へ", () => go("confirm")), back);
+        panel.append(button("練習へ", () => go("confirm")), back);
         break;
       }
       case "confirm": {
@@ -408,7 +438,7 @@ function start(root, study, emit) {
         break;
       }
       case "done":
-        layout("送信完了").append(el("p", "送信が完了しました。ご協力ありがとうございました。"));
+        layout("回答完了しました").append(el("p", "ご協力ありがとうございました。"));
         break;
     }
   }
