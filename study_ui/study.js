@@ -1,4 +1,19 @@
 const versions = ["study_version", "stimulus_manifest_version", "assignment_version"];
+const introduction = [
+  {
+    lang: "ja",
+    opening: "練習1問と本番5問があります。",
+    timing: "各問題で回答時間も計測しています。一問 開始したら、最後まで途切れずに受けてください。（各問題の間は少しの休憩可能ですが、長時間放置するとセッションが切れて最初からやり直しになる可能性があるのでご注意ください。）",
+    steps: [
+      "問題文をよく読み、選択肢 A - D の中から適切なものを選択し回答してください。",
+      "その問題に対して、自分の回答に対する自信度合いを5段階で回答してください。",
+    ],
+    repeat: "上記の流れを、6問分繰り返します。",
+    submit: "最後に「回答をまとめて送信」を押してください。",
+    complete: "「送信が完了しました。」の文言が出れば実験完了です。",
+  },
+
+];
 const trialFields = ["trial_index", "question_id", "layout_condition_id", "stimulus_id", "stimulus_sha256"];
 const utc = () => new Date().toISOString();
 const pick = (source, keys) => Object.fromEntries(keys.map(key => [key, source[key]]));
@@ -350,12 +365,22 @@ function start(root, study, emit) {
       }
       case "instructions": {
         const panel = layout("実験の説明");
-        const instructions = el("ol");
-        for (const line of study.introduction) instructions.append(el("li", line));
+        for (const section of introduction) {
+          const content = el("div", undefined, "introduction");
+          content.lang = section.lang;
+          const steps = el("ol");
+          for (const line of section.steps) steps.append(el("li", line));
+          const final = el("p", section.submit);
+          final.append(el("br"), document.createTextNode(section.complete));
+          content.append(el("p", section.opening), el("p", section.timing), steps,
+            el("p", section.repeat), final);
+          panel.append(content);
+        }
         const back = button("グループを変更", () => go("group"));
         back.classList.add("secondary");
-        panel.append(instructions, el("p", currentTrial().definition, "muted"),
-          button("練習へ", () => go("confirm")), back);
+        const actions = el("div", undefined, "instruction-actions");
+        actions.append(button("練習問題へ", () => go("confirm")), back);
+        panel.append(actions);
         break;
       }
       case "confirm": {
