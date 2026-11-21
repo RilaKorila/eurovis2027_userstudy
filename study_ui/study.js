@@ -12,18 +12,7 @@ const introduction = [
     submit: "最後に「回答をまとめて送信」を押してください。",
     complete: "「回答完了しました」の文言が出れば実験完了です。",
   },
-  {
-    lang: "en",
-    opening: "There is one practice question and five main questions.",
-    timing: "Your response time is measured for each question. Once you start a question, please complete it without interruption. (You may take a short break between questions, but please note that leaving the session idle for too long may cause it to expire, requiring you to start over.)",
-    steps: [
-      "Read the question carefully and select the appropriate answer from options A - D.",
-      "Rate your confidence in your answer to that question on a five-point scale.",
-    ],
-    repeat: "Repeat the steps above for all six questions.",
-    submit: "Finally, press 「回答をまとめて送信」 (Submit all responses).",
-    complete: "The experiment is complete when you see 「回答完了しました」 (Responses completed).",
-  },
+
 ];
 const trialFields = ["trial_index", "question_id", "layout_condition_id", "stimulus_id", "stimulus_sha256"];
 const utc = () => new Date().toISOString();
@@ -376,8 +365,7 @@ function start(root, study, emit) {
       }
       case "instructions": {
         const panel = layout("実験の説明");
-        for (const [index, section] of introduction.entries()) {
-          if (index) panel.append(el("hr"));
+        for (const section of introduction) {
           const content = el("div", undefined, "introduction");
           content.lang = section.lang;
           const steps = el("ol");
