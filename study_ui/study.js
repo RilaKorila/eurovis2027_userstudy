@@ -1,4 +1,10 @@
 const versions = ["study_version", "stimulus_manifest_version", "assignment_version"];
+const introduction = [
+  "練習1問と本番5問があります。各問題でA〜Dから答えを1つ選んでください。",
+  "左が分裂前、右が分裂後です。Pは分裂元、XとYは分裂先です。A〜Dは左右で同じ文字が対応します。",
+  "回答を確定した後に、自信度を選んでください。",
+  "最後に「回答をまとめて送信」を押してください。",
+];
 const trialFields = ["trial_index", "question_id", "layout_condition_id", "stimulus_id", "stimulus_sha256"];
 const utc = () => new Date().toISOString();
 const pick = (source, keys) => Object.fromEntries(keys.map(key => [key, source[key]]));
@@ -351,7 +357,7 @@ function start(root, study, emit) {
       case "instructions": {
         const panel = layout("実験の説明");
         const instructions = el("ol");
-        for (const line of study.introduction) instructions.append(el("li", line));
+        for (const line of introduction) instructions.append(el("li", line));
         const back = button("グループを変更", () => go("group"));
         back.classList.add("secondary");
         panel.append(instructions, button("練習へ", () => go("confirm")), back);

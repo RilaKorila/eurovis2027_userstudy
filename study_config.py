@@ -14,13 +14,6 @@ LAYOUTS = ("L1", "L2", "L3")
 QUESTIONS = tuple(f"Q{i}" for i in range(1, 6))
 VERSIONS = ("study_version", "stimulus_manifest_version", "assignment_version")
 SOURCE_FIELDS = ("dataset_id", "event_id", "source_timestamp", "target_timestamp")
-INTRO = [
-    "練習1問と本番5問に回答します。",
-    "前後2時刻の図を見比べて、A〜Dから回答を1つ選んでください。",
-    "回答を確定した後に、自信度を答えてください。",
-    "次の問題は、開始確認の画面で準備ができてから始めてください。",
-    "最後に「回答をまとめて送信」を押してください。",
-]
 
 
 def require(condition, message):
@@ -137,9 +130,6 @@ def load_study(mode, config_dir, cloud_json=None):
     require(all(type(value) is int and value > 0 for value in display), "Set a positive minimum viewport")
     algorithms = {layout: config["layout_conditions"][layout]["researcher_algorithm_name"] for layout in LAYOUTS}
     require(all(isinstance(name, str) and name.strip() for name in algorithms.values()), "Missing algorithm name")
-    intro = config.get("introduction", INTRO)
-    require(isinstance(intro, list) and intro and all(isinstance(s, str) and s.strip() for s in intro),
-            "Introduction must be a list of non-empty strings")
 
     stimuli = {}
     used_ids = set()
@@ -204,6 +194,6 @@ def load_study(mode, config_dir, cloud_json=None):
     feedback = "t1で、Pから伸びている線の先を確認してください。" if preview else config["practice"]["feedback"]
     require(isinstance(feedback, str) and feedback.strip(), "Set practice feedback")
     public = dict(versions, preview=preview, minimum_viewport=display, groups=groups,
-                  confidence=confidence, introduction=intro,
+                  confidence=confidence,
                   practice_feedback={"answer": answers["P0"], "explanation": feedback})
     return public, answers, algorithms
