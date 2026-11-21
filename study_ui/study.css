@@ -18,6 +18,7 @@ label { display: inline-flex; align-items: center; gap: 7px; border: 1px solid #
 label:has(:checked) { background: #e9f2ff; border-color: #285c97; }
 input { accent-color: #285c97; }
 .action { background: #184f82; color: white; border: 1px solid transparent; border-radius: 6px; padding: 9px 15px; margin: 4px 8px 0 0; font: inherit; font-weight: 600; cursor: pointer; }
+.action.secondary { background: #fff; color: #184f82; border-color: #184f82; }
 .action:disabled { background: #e1e6ec; color: #505a65; cursor: default; }
 .action:focus-visible, input:focus-visible { outline: 3px solid #2782ce; outline-offset: 2px; }
 [hidden] { display: none !important; }
