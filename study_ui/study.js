@@ -272,8 +272,8 @@ function start(root, study, emit) {
     }
     clearTimeout(timeout);
     requestId = undefined;
-    // Retain only a local completion marker after the server has acknowledged the save.
-    state = {screen: "done", submission_id: state.submission_id};
+    // Retain the completion marker and group after the save is acknowledged.
+    state = {screen: "done", submission_id: state.submission_id, group_id: state.group_id};
     if (!save()) return;
     const panel = layout("回答を保存しました");
     panel.classList.add("completion-splash");
@@ -294,7 +294,11 @@ function start(root, study, emit) {
     h.tabIndex = -1;
     const panel = el("section", undefined, "panel");
     panel.append(h);
-    root.replaceChildren(header, panel);
+    root.replaceChildren(header);
+    if (state.group_id && state.screen !== "group") {
+      root.append(el("p", `選択グループ：Group ${state.group_id}`, "selected-group muted"));
+    }
+    root.append(panel);
     if (focusHeading) h.focus({preventScroll: true});
     return panel;
   }
@@ -375,9 +379,15 @@ function start(root, study, emit) {
       }
       case "feedback": {
         const panel = layout("練習の解説");
+        const retry = button("練習問題やり直す", () => {
+          state.trials.pop();
+          state.aborted_attempts = state.aborted_attempts.filter(record => record.trial_index !== 0);
+          go("confirm");
+        });
+        retry.classList.add("secondary");
         panel.append(el("p", `正解は ${study.practice_feedback.answer} です。`, "prompt"),
           el("p", study.practice_feedback.explanation),
-          button("本番へ", () => { state.index = 1; go("confirm"); }));
+          button("本番へ", () => { state.index = 1; go("confirm"); }), retry);
         break;
       }
       case "submit": {
