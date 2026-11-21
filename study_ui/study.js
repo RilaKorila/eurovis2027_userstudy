@@ -390,7 +390,9 @@ function start(root, study, emit) {
         }
         const back = button("グループを変更", () => go("group"));
         back.classList.add("secondary");
-        panel.append(button("練習へ", () => go("confirm")), back);
+        const actions = el("div", undefined, "instruction-actions");
+        actions.append(button("練習問題へ", () => go("confirm")), back);
+        panel.append(actions);
         break;
       }
       case "confirm": {
