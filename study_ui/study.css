@@ -1,6 +1,7 @@
 :host { color: #17293c; font-family: system-ui, sans-serif; }
 #study-root { max-width: 1150px; margin: 0 auto; }
 header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-weight: 650; }
+header:has(+ .selected-group) { margin-bottom: 4px; }
 .preview { font-size: .78rem; font-weight: 600; background: #ffefc7; color: #704400; border-radius: 5px; padding: 4px 8px; }
 .panel { background: #fff; color: #17293c; border: 1px solid #d2dce6; border-radius: 12px; padding: 20px 24px; }
 h1 { font-size: 1.6rem; line-height: 1.28; margin: 0 0 12px; }
