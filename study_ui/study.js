@@ -3,7 +3,7 @@ const connectionNote = "※ ここでは「つながる」は、2つのグルー
 const introduction = [
   {
     lang: "ja",
-    opening: "練習1問と本番5問があります。",
+    opening: "練習1問と本番6問があります。",
     timing: "各問題で回答時間も計測しています。一問 開始したら、最後まで途切れずに受けてください。（各問題の間は少しの休憩可能ですが、長時間放置するとセッションが切れて最初からやり直しになる可能性があるのでご注意ください。）",
     steps: [
       "問題文をよく読み、選択肢 A - D の中から適切なものを選択し回答してください。",
@@ -48,7 +48,7 @@ const english = {
   "練習問題をやり直す": "Retry practice question",
   "本番へ": "Continue to main questions",
   "送信確認": "Confirm submission",
-  "本番5問の回答と自信度が揃いました。送信して終了してください。": "You have answered all five main questions and rated your confidence. Submit your responses to finish.",
+  "本番6問の回答と自信度が揃いました。送信して終了してください。": "You have answered all six main questions and rated your confidence. Submit your responses to finish.",
   "保存完了を待っています…": "Waiting for confirmation…",
   "保存の完了を確認できませんでした。回答は保持されています。再送信してください。": "Could not confirm that your responses were saved. Your responses are retained. Please submit again.",
   "送信中…": "Submitting…",
@@ -60,7 +60,7 @@ const english = {
   "ご協力ありがとうございました。": "Thank you for participating.",
   "回答を保持できません。研究担当者へご連絡ください。": "Your responses could not be retained. Please contact the researcher.",
   "実験を開始できません。ブラウザの設定をご確認ください。": "The study could not be started. Please check your browser settings.",
-  "練習1問と本番5問があります。": "There is one practice question and five main questions.",
+  "練習1問と本番6問があります。": "There is one practice question and six main questions.",
   "各問題で回答時間も計測しています。一問 開始したら、最後まで途切れずに受けてください。（各問題の間は少しの休憩可能ですが、長時間放置するとセッションが切れて最初からやり直しになる可能性があるのでご注意ください。）": "Your response time is measured for each question. Once you start a question, please complete it without interruption. You may take a short break between questions, but a long period of inactivity may end your session and require you to start over.",
   "問題文をよく読み、選択肢 A - D の中から適切なものを選択し回答してください。": "Read each question carefully and select the appropriate answer from options A–D.",
   "その問題に対して、自分の回答に対する自信度合いを5段階で回答してください。": "Rate your confidence in your answer on a five-point scale.",
@@ -92,8 +92,8 @@ function englishText(text) {
   if (match) return `Please make the viewport at least ${match[1]} pixels.`;
   match = text.match(/^正解は (.+) です。$/);
   if (match) return `The correct answer is ${match[1]}.`;
-  match = text.match(/^Group (.+) ／ 練習1問・本番5問$/);
-  if (match) return `Group ${match[1]} / 1 practice question and 5 main questions`;
+  match = text.match(/^Group (.+) ／ 練習1問・本番6問$/);
+  if (match) return `Group ${match[1]} / 1 practice question and 6 main questions`;
   return text;
 }
 const trialFields = ["trial_index", "question_id", "layout_condition_id", "stimulus_id", "stimulus_sha256"];
@@ -542,8 +542,8 @@ function start(root, study, emit) {
       }
       case "submit": {
         const panel = layout("送信確認");
-        panel.append(el("p", "本番5問の回答と自信度が揃いました。送信して終了してください。"),
-          el("p", `Group ${state.group_id} ／ 練習1問・本番5問`));
+        panel.append(el("p", "本番6問の回答と自信度が揃いました。送信して終了してください。"),
+          el("p", `Group ${state.group_id} ／ 練習1問・本番6問`));
         const status = el("p", requestId ? "保存完了を待っています…" : failed ?
           "保存の完了を確認できませんでした。回答は保持されています。再送信してください。" : "",
         failed && !requestId ? "error" : "muted");
