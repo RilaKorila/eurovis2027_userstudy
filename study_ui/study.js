@@ -45,7 +45,7 @@ const english = {
   "練習問題へ": "Continue to practice",
   "次へ": "Next",
   "練習の解説": "Practice explanation",
-  "練習問題やり直す": "Retry practice question",
+  "練習問題をやり直す": "Retry practice question",
   "本番へ": "Continue to main questions",
   "送信確認": "Confirm submission",
   "本番5問の回答と自信度が揃いました。送信して終了してください。": "You have answered all five main questions and rated your confidence. Submit your responses to finish.",
@@ -500,7 +500,7 @@ function start(root, study, emit) {
         }
         const back = button("グループを変更", () => go("group"));
         back.classList.add("secondary");
-        const actions = el("div", undefined, "instruction-actions");
+        const actions = el("div", undefined, "split-actions");
         actions.append(button("練習問題へ", () => go("confirm")), back);
         panel.append(actions);
         break;
@@ -526,15 +526,16 @@ function start(root, study, emit) {
       }
       case "feedback": {
         const panel = layout("練習の解説");
-        const retry = button("練習問題やり直す", () => {
+        const retry = button("練習問題をやり直す", () => {
           state.trials.pop();
           state.aborted_attempts = state.aborted_attempts.filter(record => record.trial_index !== 0);
           go("confirm");
         });
         retry.classList.add("secondary");
+        const actions = el("div", undefined, "split-actions");
+        actions.append(button("本番へ", () => { state.index = 1; go("confirm"); }), retry);
         panel.append(el("p", `正解は ${study.practice_feedback.answer} です。`, "prompt"),
-          el("p", study.practice_feedback.explanation),
-          button("本番へ", () => { state.index = 1; go("confirm"); }), retry);
+          el("p", study.practice_feedback.explanation), actions);
         break;
       }
       case "submit": {
