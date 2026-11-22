@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parent
 GROUPS = ("A", "B", "C")
 OPTIONS = ("A", "B", "C", "D")
 LAYOUTS = ("L1", "L2", "L3")
-QUESTIONS = tuple(f"Q{i}" for i in range(1, 6))
+QUESTIONS = tuple(f"Q{i}" for i in range(1, 7))
 VERSIONS = ("study_version", "stimulus_manifest_version", "assignment_version")
 SOURCE_FIELDS = ("dataset_id", "event_id", "source_timestamp", "target_timestamp")
 
@@ -60,7 +60,7 @@ def preview_config():
     """Build the synthetic demo independently of the local study materials."""
     question = {
         "prompt": "後の時刻（t1）で、Pと線で直接つながっているノードはどれですか？",
-        "definition": "\"つながる\"の定義: 異なるグループの所属ノード間に線が1本以上あること。",
+        "definition": "左右の図は、連続する2つのタイムスタンプのグラフを表しています。",
         "option_ids": OPTIONS,
     }
     labels = (
@@ -70,7 +70,7 @@ def preview_config():
     return {
         "study_version": "preview-v1",
         "stimulus_manifest_version": "synthetic-v1",
-        "assignment_version": "rotation-5q-v1",
+        "assignment_version": "rotation-6q-v1",
         "layout_conditions": {layout: {"researcher_algorithm_name": f"Synthetic {layout}"}
                               for layout in LAYOUTS},
         "groups": {
@@ -99,7 +99,7 @@ def load_study(mode, config_dir, cloud_json=None):
     preview = mode == "preview"
     if preview:
         config = preview_config()
-        answers = dict(zip(("P0", *QUESTIONS), [OPTIONS[(i + 1) % 4] for i in range(6)]))
+        answers = dict(zip(("P0", *QUESTIONS), [OPTIONS[(i + 1) % 4] for i in range(len(QUESTIONS) + 1)]))
     else:
         if cloud_json is None:
             config = read_json(config_dir / "study-config.json")
@@ -116,7 +116,7 @@ def load_study(mode, config_dir, cloud_json=None):
     require(all(isinstance(v, str) and v.strip() for v in versions.values()), "Missing study version")
     require(preview or not versions["study_version"].lower().startswith("preview"), "Use a production study version")
     require(set(config["groups"]) == set(GROUPS), "Expected Groups A, B, C")
-    require(set(config["questions"]) == set(QUESTIONS), "Expected Q1–Q5")
+    require(set(config["questions"]) == set(QUESTIONS), "Expected Q1–Q6")
     require(set(config["layout_conditions"]) == set(LAYOUTS), "Expected layouts L1–L3")
     require(set(answers) == {"P0", *QUESTIONS} and all(a in OPTIONS for a in answers.values()),
             "Invalid or missing answer key")
@@ -184,7 +184,7 @@ def load_study(mode, config_dir, cloud_json=None):
     groups = {}
     for group in GROUPS:
         assigned = config["groups"][group]["trials"]
-        require(len(assigned) == 5 and {item["question_id"] for item in assigned} == set(QUESTIONS),
+        require(len(assigned) == len(QUESTIONS) and {item["question_id"] for item in assigned} == set(QUESTIONS),
                 f"Group {group}: expected each question once")
         keys = [("P0", "practice")] + [(item["question_id"], item["layout_condition_id"]) for item in assigned]
         groups[group] = [

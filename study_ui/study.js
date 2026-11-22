@@ -1,5 +1,5 @@
 const versions = ["study_version", "stimulus_manifest_version", "assignment_version"];
-const connectionNote = "※ ここでは「つながる」は、2つのグループを直接結ぶ線（エッジ）が少なくとも1本あることを指します。";
+const connectionNote = "※ ここでは「つながる」は、2つのコミュニティを直接結ぶ線（エッジ）が少なくとも1本あることを指します。";
 const introduction = [
   {
     lang: "ja",
@@ -18,7 +18,7 @@ const introduction = [
 // Translate visible text in place so switching languages never restarts a timed trial
 // or clears an answer already selected by the participant.
 const english = {
-  [connectionNote]: "Note: Here, “connected” means that at least one edge directly links the two groups.",
+  [connectionNote]: "Note: Here, “connected” means that at least one edge directly links the two communities.",
   "グラフの比較実験": "Graph Comparison Study",
   "開発プレビュー": "Development preview",
   "練習問題": "Practice question",
@@ -67,13 +67,17 @@ const english = {
   "上記の流れを、6問分繰り返します。": "Repeat these steps for all six questions.",
   "最後に「回答をまとめて送信」を押してください。": "Finally, select “Submit all responses.”",
   "「送信が完了しました。」の文言が出れば実験完了です。": "The study is complete when “Your responses have been submitted” appears.",
-  "左の図でPとつながり、右の図でX・Yの両方とつながるグループは、A〜Dのどれですか？": "Which group, A–D, is connected to P in the left graph and to both X and Y in the right graph?",
-  "左の図でPとつながり、右の図でX・Yの片方だけとつながるグループは、A〜Dのどれですか？": "Which group, A–D, is connected to P in the left graph and to only one of X and Y in the right graph?",
-  "左右の図は、連続する2つのタイムスタンプのグラフを表しています。左の図のグループXは、次のタイムスタンプを表す右の図では、XとYの2つに分裂しています。": "The left and right graphs represent two consecutive time points. Group X in the left graph splits into X and Y in the right graph, which represents the next time point.",
+  "左の図でPとつながり、右の図でX・Yの両方とつながるコミュニティは、A〜Dのどれですか？": "Which community, A–D, is connected to P in the left graph and to both X and Y in the right graph?",
+  "左の図でPとつながり、右の図でX・Yの片方だけとつながるコミュニティは、A〜Dのどれですか？": "Which community, A–D, is connected to P in the left graph and to only one of X and Y in the right graph?",
+  "左右の図は、連続する2つのタイムスタンプのグラフを表しています。左の図のコミュニティXは、次のタイムスタンプを表す右の図では、XとYの2つに分裂しています。": "The left and right graphs represent two consecutive time points. Community X in the left graph splits into X and Y in the right graph, which represents the next time point.",
+  "左右の図は、連続する2つのタイムスタンプのグラフを表しています。": "The left and right graphs represent two consecutive time points.",
+  "左右の図は、連続する2つのタイムスタンプのグラフを表しています。左の図のコミュニティPは、右の図ではXとYの2つに分裂しています。左右で同じ記号がふられているコミュニティは、隣り合うタイムスタンプにおいて同一のコミュニティです。": "The left and right graphs represent two consecutive time points. Community P in the left graph splits into X and Y in the right graph. Communities marked with the same symbol on the left and right are the same community at consecutive time points.",
+  "左右の図は、連続する2つのタイムスタンプのグラフを表しています。左の図のコミュニティXとYは、右の図ではPに統合されています。左右で同じ記号がふられているコミュニティは、隣り合うタイムスタンプにおいて同一のコミュニティです。": "The left and right graphs represent two consecutive time points. Communities X and Y in the left graph merge into P in the right graph. Communities marked with the same symbol on the left and right are the same community at consecutive time points.",
+  "2010年にX・Yの少なくとも片方と直接つながり、2011年に統合後のPとも直接つながるコミュニティは、A〜Dのどれですか？": "Which community, A–D, is directly connected to at least one of X and Y in 2010 and also directly connected to the merged community P in 2011?",
   "左ではDとPの間に線があります。右ではDとX、DとYの間に線があります。": "In the left graph, there is a line between D and P. In the right graph, there are lines between D and X and between D and Y.",
   "後の時刻（t1）で、Pと線で直接つながっているノードはどれですか？": "At the later time point (t1), which node is directly connected to P by a line?",
-  "つながる：異なるグループの所属ノード間に線が1本以上あること。": "Connected means that at least one line joins nodes belonging to different groups.",
-  "\"つながる\"の定義: 異なるグループの所属ノード間に線が1本以上あること。": "“Connected” means that at least one line joins nodes belonging to different groups.",
+  "つながる：異なるコミュニティの所属ノード間に線が1本以上あること。": "Connected means that at least one line joins nodes belonging to different communities.",
+  "\"つながる\"の定義: 異なるコミュニティの所属ノード間に線が1本以上あること。": "“Connected” means that at least one line joins nodes belonging to different communities.",
   "t1で、Pから伸びている線の先を確認してください。": "At t1, check where the line from P leads.",
   "今の回答に、どのくらい自信がありますか？": "How confident are you in your answer?",
   "まったく自信がない": "Not at all confident",

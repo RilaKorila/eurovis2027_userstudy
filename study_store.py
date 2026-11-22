@@ -72,7 +72,7 @@ def validate_submission(payload, study, answers, algorithms):
             "Invalid student ID")
     assigned = study["groups"][payload["group_id"]]
     records = payload["trials"]
-    require(isinstance(records, list) and len(records) == len(assigned), "Expected six complete trials")
+    require(isinstance(records, list) and len(records) == len(assigned), "Expected all assigned trials to be complete")
     submission_id = uuid_text(payload["submission_id"])
     session_id = uuid_text(payload["session_id"])
     aborted = []
