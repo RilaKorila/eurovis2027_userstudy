@@ -1,9 +1,9 @@
 const versions = ["study_version", "stimulus_manifest_version", "assignment_version"];
-const connectionNote = "※ ここでは「つながる」は、2つのグループを直接結ぶ線（エッジ）が少なくとも1本あることを指します。";
+const connectionNote = "※ ここでは「つながる」は、2つのコミュニティを直接結ぶ線（エッジ）が少なくとも1本あることを指します。";
 const introduction = [
   {
     lang: "ja",
-    opening: "練習1問と本番5問があります。",
+    opening: "練習1問と本番6問があります。",
     timing: "各問題で回答時間も計測しています。一問 開始したら、最後まで途切れずに受けてください。（各問題の間は少しの休憩可能ですが、長時間放置するとセッションが切れて最初からやり直しになる可能性があるのでご注意ください。）",
     steps: [
       "問題文をよく読み、選択肢 A - D の中から適切なものを選択し回答してください。",
@@ -18,7 +18,7 @@ const introduction = [
 // Translate visible text in place so switching languages never restarts a timed trial
 // or clears an answer already selected by the participant.
 const english = {
-  [connectionNote]: "Note: Here, “connected” means that at least one edge directly links the two groups.",
+  [connectionNote]: "Note: Here, “connected” means that at least one edge directly links the two communities.",
   "グラフの比較実験": "Graph Comparison Study",
   "開発プレビュー": "Development preview",
   "練習問題": "Practice question",
@@ -48,7 +48,7 @@ const english = {
   "練習問題をやり直す": "Retry practice question",
   "本番へ": "Continue to main questions",
   "送信確認": "Confirm submission",
-  "本番5問の回答と自信度が揃いました。送信して終了してください。": "You have answered all five main questions and rated your confidence. Submit your responses to finish.",
+  "本番6問の回答と自信度が揃いました。送信して終了してください。": "You have answered all six main questions and rated your confidence. Submit your responses to finish.",
   "保存完了を待っています…": "Waiting for confirmation…",
   "保存の完了を確認できませんでした。回答は保持されています。再送信してください。": "Could not confirm that your responses were saved. Your responses are retained. Please submit again.",
   "送信中…": "Submitting…",
@@ -60,20 +60,24 @@ const english = {
   "ご協力ありがとうございました。": "Thank you for participating.",
   "回答を保持できません。研究担当者へご連絡ください。": "Your responses could not be retained. Please contact the researcher.",
   "実験を開始できません。ブラウザの設定をご確認ください。": "The study could not be started. Please check your browser settings.",
-  "練習1問と本番5問があります。": "There is one practice question and five main questions.",
+  "練習1問と本番6問があります。": "There is one practice question and six main questions.",
   "各問題で回答時間も計測しています。一問 開始したら、最後まで途切れずに受けてください。（各問題の間は少しの休憩可能ですが、長時間放置するとセッションが切れて最初からやり直しになる可能性があるのでご注意ください。）": "Your response time is measured for each question. Once you start a question, please complete it without interruption. You may take a short break between questions, but a long period of inactivity may end your session and require you to start over.",
   "問題文をよく読み、選択肢 A - D の中から適切なものを選択し回答してください。": "Read each question carefully and select the appropriate answer from options A–D.",
   "その問題に対して、自分の回答に対する自信度合いを5段階で回答してください。": "Rate your confidence in your answer on a five-point scale.",
   "上記の流れを、6問分繰り返します。": "Repeat these steps for all six questions.",
   "最後に「回答をまとめて送信」を押してください。": "Finally, select “Submit all responses.”",
   "「送信が完了しました。」の文言が出れば実験完了です。": "The study is complete when “Your responses have been submitted” appears.",
-  "左の図でPとつながり、右の図でX・Yの両方とつながるグループは、A〜Dのどれですか？": "Which group, A–D, is connected to P in the left graph and to both X and Y in the right graph?",
-  "左の図でPとつながり、右の図でX・Yの片方だけとつながるグループは、A〜Dのどれですか？": "Which group, A–D, is connected to P in the left graph and to only one of X and Y in the right graph?",
-  "左右の図は、連続する2つのタイムスタンプのグラフを表しています。左の図のグループXは、次のタイムスタンプを表す右の図では、XとYの2つに分裂しています。": "The left and right graphs represent two consecutive time points. Group X in the left graph splits into X and Y in the right graph, which represents the next time point.",
+  "左の図でPとつながり、右の図でX・Yの両方とつながるコミュニティは、A〜Dのどれですか？": "Which community, A–D, is connected to P in the left graph and to both X and Y in the right graph?",
+  "左の図でPとつながり、右の図でX・Yの片方だけとつながるコミュニティは、A〜Dのどれですか？": "Which community, A–D, is connected to P in the left graph and to only one of X and Y in the right graph?",
+  "左右の図は、連続する2つのタイムスタンプのグラフを表しています。左の図のコミュニティXは、次のタイムスタンプを表す右の図では、XとYの2つに分裂しています。": "The left and right graphs represent two consecutive time points. Community X in the left graph splits into X and Y in the right graph, which represents the next time point.",
+  "左右の図は、連続する2つのタイムスタンプのグラフを表しています。": "The left and right graphs represent two consecutive time points.",
+  "左右の図は、連続する2つのタイムスタンプのグラフを表しています。左の図のコミュニティPは、右の図ではXとYの2つに分裂しています。左右で同じ記号がふられているコミュニティは、隣り合うタイムスタンプにおいて同一のコミュニティです。": "The left and right graphs represent two consecutive time points. Community P in the left graph splits into X and Y in the right graph. Communities marked with the same symbol on the left and right are the same community at consecutive time points.",
+  "左右の図は、連続する2つのタイムスタンプのグラフを表しています。左の図のコミュニティXとYは、右の図ではPに統合されています。左右で同じ記号がふられているコミュニティは、隣り合うタイムスタンプにおいて同一のコミュニティです。": "The left and right graphs represent two consecutive time points. Communities X and Y in the left graph merge into P in the right graph. Communities marked with the same symbol on the left and right are the same community at consecutive time points.",
+  "2010年にX・Yの少なくとも片方と直接つながり、2011年に統合後のPとも直接つながるコミュニティは、A〜Dのどれですか？": "Which community, A–D, is directly connected to at least one of X and Y in 2010 and also directly connected to the merged community P in 2011?",
   "左ではDとPの間に線があります。右ではDとX、DとYの間に線があります。": "In the left graph, there is a line between D and P. In the right graph, there are lines between D and X and between D and Y.",
   "後の時刻（t1）で、Pと線で直接つながっているノードはどれですか？": "At the later time point (t1), which node is directly connected to P by a line?",
-  "つながる：異なるグループの所属ノード間に線が1本以上あること。": "Connected means that at least one line joins nodes belonging to different groups.",
-  "\"つながる\"の定義: 異なるグループの所属ノード間に線が1本以上あること。": "“Connected” means that at least one line joins nodes belonging to different groups.",
+  "つながる：異なるコミュニティの所属ノード間に線が1本以上あること。": "Connected means that at least one line joins nodes belonging to different communities.",
+  "\"つながる\"の定義: 異なるコミュニティの所属ノード間に線が1本以上あること。": "“Connected” means that at least one line joins nodes belonging to different communities.",
   "t1で、Pから伸びている線の先を確認してください。": "At t1, check where the line from P leads.",
   "今の回答に、どのくらい自信がありますか？": "How confident are you in your answer?",
   "まったく自信がない": "Not at all confident",
@@ -92,8 +96,8 @@ function englishText(text) {
   if (match) return `Please make the viewport at least ${match[1]} pixels.`;
   match = text.match(/^正解は (.+) です。$/);
   if (match) return `The correct answer is ${match[1]}.`;
-  match = text.match(/^Group (.+) ／ 練習1問・本番5問$/);
-  if (match) return `Group ${match[1]} / 1 practice question and 5 main questions`;
+  match = text.match(/^Group (.+) ／ 練習1問・本番6問$/);
+  if (match) return `Group ${match[1]} / 1 practice question and 6 main questions`;
   return text;
 }
 const trialFields = ["trial_index", "question_id", "layout_condition_id", "stimulus_id", "stimulus_sha256"];
@@ -542,8 +546,8 @@ function start(root, study, emit) {
       }
       case "submit": {
         const panel = layout("送信確認");
-        panel.append(el("p", "本番5問の回答と自信度が揃いました。送信して終了してください。"),
-          el("p", `Group ${state.group_id} ／ 練習1問・本番5問`));
+        panel.append(el("p", "本番6問の回答と自信度が揃いました。送信して終了してください。"),
+          el("p", `Group ${state.group_id} ／ 練習1問・本番6問`));
         const status = el("p", requestId ? "保存完了を待っています…" : failed ?
           "保存の完了を確認できませんでした。回答は保持されています。再送信してください。" : "",
         failed && !requestId ? "error" : "muted");
