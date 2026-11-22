@@ -44,7 +44,7 @@ const english = {
   "グループを変更": "Change group",
   "練習問題へ": "Continue to practice",
   "次へ": "Next",
-  "練習の解説": "Practice explanation",
+  "練習問題の解説": "Practice question feedback",
   "練習問題をやり直す": "Retry practice question",
   "本番へ": "Continue to main questions",
   "送信確認": "Confirm submission",
@@ -70,7 +70,7 @@ const english = {
   "左の図でPとつながり、右の図でX・Yの両方とつながるグループは、A〜Dのどれですか？": "Which group, A–D, is connected to P in the left graph and to both X and Y in the right graph?",
   "左の図でPとつながり、右の図でX・Yの片方だけとつながるグループは、A〜Dのどれですか？": "Which group, A–D, is connected to P in the left graph and to only one of X and Y in the right graph?",
   "左右の図は、連続する2つのタイムスタンプのグラフを表しています。左の図のグループXは、次のタイムスタンプを表す右の図では、XとYの2つに分裂しています。": "The left and right graphs represent two consecutive time points. Group X in the left graph splits into X and Y in the right graph, which represents the next time point.",
-  "正解はDです。左ではDとPの間に線があります。右ではDとX、DとYの間に線があります。": "The correct answer is D. In the left graph, there is a line between D and P. In the right graph, there are lines between D and X and between D and Y.",
+  "左ではDとPの間に線があります。右ではDとX、DとYの間に線があります。": "In the left graph, there is a line between D and P. In the right graph, there are lines between D and X and between D and Y.",
   "後の時刻（t1）で、Pと線で直接つながっているノードはどれですか？": "At the later time point (t1), which node is directly connected to P by a line?",
   "つながる：異なるグループの所属ノード間に線が1本以上あること。": "Connected means that at least one line joins nodes belonging to different groups.",
   "\"つながる\"の定義: 異なるグループの所属ノード間に線が1本以上あること。": "“Connected” means that at least one line joins nodes belonging to different groups.",
@@ -525,7 +525,7 @@ function start(root, study, emit) {
         break;
       }
       case "feedback": {
-        const panel = layout("練習の解説");
+        const panel = layout("練習問題の解説");
         const retry = button("練習問題をやり直す", () => {
           state.trials.pop();
           state.aborted_attempts = state.aborted_attempts.filter(record => record.trial_index !== 0);
@@ -534,8 +534,10 @@ function start(root, study, emit) {
         retry.classList.add("secondary");
         const actions = el("div", undefined, "split-actions");
         actions.append(button("本番へ", () => { state.index = 1; go("confirm"); }), retry);
-        panel.append(el("p", `正解は ${study.practice_feedback.answer} です。`, "prompt"),
-          el("p", study.practice_feedback.explanation), actions);
+        const {answer, explanation} = study.practice_feedback;
+        const detail = explanation.replace(/^正解は\s*([A-D])\s*です。\s*/,
+          (prefix, option) => option === answer ? "" : prefix);
+        panel.append(el("p", `正解は ${answer} です。`, "prompt"), el("p", detail), actions);
         break;
       }
       case "submit": {
