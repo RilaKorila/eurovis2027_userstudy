@@ -1,5 +1,5 @@
 const versions = ["study_version", "stimulus_manifest_version", "assignment_version"];
-const connectionNote = "この実験で「つながる」とは、2つのグループを直接結ぶ線（エッジ）が少なくとも1本あることを指します。";
+const connectionNote = "※ ここでは「つながる」は、2つのグループを直接結ぶ線（エッジ）が少なくとも1本あることを指します。";
 const introduction = [
   {
     lang: "ja",
@@ -18,7 +18,7 @@ const introduction = [
 // Translate visible text in place so switching languages never restarts a timed trial
 // or clears an answer already selected by the participant.
 const english = {
-  [connectionNote]: "In this study, “connected” means that at least one edge directly links the two groups.",
+  [connectionNote]: "Note: Here, “connected” means that at least one edge directly links the two groups.",
   "グラフの比較実験": "Graph Comparison Study",
   "開発プレビュー": "Development preview",
   "練習問題": "Practice question",
