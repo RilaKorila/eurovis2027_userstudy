@@ -314,7 +314,7 @@ function start(root, study, emit) {
     const trial = currentTrial();
     const panel = layout(trialTitle(), false);
     panel.style.visibility = "hidden";
-    panel.append(el("p", trial.prompt, "prompt"), el("p", trial.definition, "muted"),
+    panel.append(el("p", trial.definition, "muted"), el("p", trial.prompt, "prompt"),
       el("p", connectionNote, "muted"), image);
     let answer;
     const next = button("回答を確定して次へ", () => {
